@@ -1,5 +1,5 @@
 # minicore
-A simple MVC PHP framework. It uses the PHP PDO for database interactions, the template engine the PHP itself with helper functions and translations stored in ini files.
+A simple MVC PHP framework. It uses the PHP PDO for database interactions via the Database and Record classes. The template engine the PHP itself with helper functions. The translations stored in ini files. It has form handling via the Form, Input and Validator classes.
 
 ## Hello application
 1) Create the following directory structure in the downloaded directory:
