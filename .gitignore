@@ -1,0 +1,7 @@
+.idea/*
+app/*
+logs/*
+index.php
+index.dev.php
+index.test.php
+config.ini.php
