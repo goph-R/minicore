@@ -8,7 +8,7 @@ A simple MVC PHP framework. It uses the PHP PDO for database interactions, the t
     /templates     
 ~/logs
 ```
-2) Create and index.dev.php: 
+2) Create the index.dev.php: 
 ```php
 <?php
 
@@ -79,5 +79,5 @@ index.dev.php
 ```
 Now you can run your Hello application:
 ```
-http://localhost/your_folder_for_the_minicore/index.php?route=hello/World
+http://localhost/your_folder_for_the_minicore/index.dev.php?route=hello/World
 ```
