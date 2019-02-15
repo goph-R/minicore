@@ -1,5 +1,6 @@
 .idea/*
 app/*
+modules/**
 logs/*
 index.php
 index.dev.php

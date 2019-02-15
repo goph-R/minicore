@@ -25,6 +25,6 @@ abstract class Validator {
         $this->message = $message;
     }
     
-    abstract function doValidate($value);
+    abstract protected function doValidate($value);
 
 }

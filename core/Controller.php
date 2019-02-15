@@ -23,6 +23,9 @@ abstract class Controller {
     /** @var Translation */
     protected $translation;
 
+    /** @var UserSession */
+    protected $userSession;
+
     public function __construct(Framework $framework) {
         $this->framework = $framework;
         $this->config = $this->framework->get('config');
@@ -31,6 +34,7 @@ abstract class Controller {
         $this->router = $this->framework->get('router');
         $this->view = $this->framework->get('view');
         $this->translation = $this->framework->get('translation');
+        $this->userSession = $this->framework->get('userSession');
     }
 
     public function render($path, $vars=[]) {

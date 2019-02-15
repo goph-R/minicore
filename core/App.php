@@ -26,6 +26,9 @@ abstract class App {
     /** @var View */
     protected $view;
 
+    /** @var Module[] */
+    protected $modules = [];
+
     protected $routePath;
 
     public function __construct(Framework $framework, $env='dev', $configPath='config.ini.php') {
@@ -41,7 +44,7 @@ abstract class App {
             'helper'      => 'Helper',
             'translation' => 'Translation',
             'mailer'      => 'Mailer',
-            'user'        => 'UserSession'
+            'userSession' => 'UserSession'
         ]);
     }
 
@@ -73,10 +76,16 @@ abstract class App {
         }
     }
 
+    public function addModule($moduleData) {
+        $module = $this->framework->create($moduleData);
+        $this->modules[$module->getId()] = $module;
+    }
+
     public function run() {
         try {
             $this->initRoutePath();
             $this->initLocale();
+            $this->initModules();
             $this->callRoute();
             $this->response->send();
         } catch (Exception $e) {
@@ -84,12 +93,12 @@ abstract class App {
         }
     }
 
-    private function initRoutePath() {
+    protected function initRoutePath() {
         $routeParameter = $this->router->getParameter();
         $this->routePath = $this->request->get($routeParameter);
     }
 
-    private function initLocale() {
+    protected function initLocale() {
         $this->translation->setLocale($this->getAcceptLocale());
         if (!$this->translation->hasMultiLocales()) {
             return;
@@ -107,7 +116,14 @@ abstract class App {
         }
     }
 
-    private function getAcceptLocale() {
+    protected function initModules() {
+        // TODO: dependency tree
+        foreach ($this->modules as $module) {
+            $module->init();
+        }
+    }
+
+    protected function getAcceptLocale() {
         $result = $this->translation->getLocale();
         $acceptLanguage = $this->request->getServer('HTTP_ACCEPT_LANGUAGE');
         if ($acceptLanguage) {

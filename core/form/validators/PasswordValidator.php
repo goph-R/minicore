@@ -38,7 +38,7 @@ class PasswordValidator extends Validator {
         $this->removerRegex['minSpecialChar'] = '/[^'.$regex.']+/';
     }
 
-    public function doValidate($value) {
+    protected function doValidate($value) {
         if (function_exists('iconv')) {
             $value = iconv('UTF-8','ASCII//TRANSLIT', $value);
         }
