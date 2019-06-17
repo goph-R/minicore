@@ -34,17 +34,18 @@ abstract class App {
     public function __construct(Framework $framework, $env='dev', $configPath='config.ini.php') {
         $this->framework = $framework;
         $framework->add([
-            'config'      => ['Config', $env, $configPath],
-            'logger'      => 'Logger',
-            'database'    => ['Database', 'default'],
-            'request'     => 'Request',
-            'response'    => 'Response',
-            'router'      => 'Router',
-            'view'        => 'View',
-            'helper'      => 'Helper',
-            'translation' => 'Translation',
-            'mailer'      => 'Mailer',
-            'userSession' => 'UserSession'
+            'config'        => ['Config', $env, $configPath],
+            'logger'        => 'Logger',
+            'database'      => ['Database', 'default'],
+            'request'       => 'Request',
+            'response'      => 'Response',
+            'router'        => 'Router',
+            'RouteAliases' => 'RouteAliases',
+            'view'          => 'View',
+            'helper'        => 'Helper',
+            'translation'   => 'Translation',
+            'mailer'        => 'Mailer',
+            'userSession'   => 'UserSession'
         ]);
     }
 

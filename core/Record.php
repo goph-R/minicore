@@ -32,6 +32,10 @@ abstract class Record {
         $this->db = $framework->get($dbInstanceName == null ? $this->dbInstanceName : $dbInstanceName);
     }
 
+    public function getTableName() {
+        return $this->tableName;
+    }
+
     protected function isNameProtected($name) {
         return in_array($name, self::$protectedNames);
     }

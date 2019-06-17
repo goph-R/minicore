@@ -5,15 +5,24 @@ class Router {
     /** @var Config */
     private $config;
 
+    /** @var RouteAliases */
+    private $aliases;
+
     private $routes = [];
+    private $useAliases;
 
     public function __construct(Framework $framework) {
         $this->config = $framework->get('config');
+        $this->aliases = $framework->get('RouteAliases');
+        $this->useAliases = $this->config->get('router.use_aliases', false);
     }
 
     public function addRoute($signature, $callable, $method='GET') {
-       $this->routes[$signature.$method] = new Route($signature, $callable, $method);
+        $result = new Route($signature, $callable, $method);
+        $this->routes[$signature.$method] = $result;
+        return $result;
     }
+
 
     public function add($data) {
         foreach ($data as $d) {
@@ -31,6 +40,9 @@ class Router {
      * @return Route
      */
     public function get($path, $method) {
+        if ($this->useAliases && $this->aliases->hasAlias($path)) {
+            $path = $this->aliases->getPath($path);
+        }
         foreach ($this->routes as $route) {
             if ($route->match($path, $method)) {
                 return $route;
@@ -43,6 +55,7 @@ class Router {
         return $this->config->get('router.parameter', 'route');
     }
 
+    // TODO: translate
     public function getUrl($path=null, $params=[], $amp='&amp;') {
         $paramsSeparator = '';
         $paramsString = '';
@@ -58,7 +71,11 @@ class Router {
             $paramsString = http_build_query($params, '', $amp);
             $paramsSeparator = $useRewrite ? '?' : $amp;
         }
-        return $prefix.$path.$paramsSeparator.$paramsString;
+        if ($this->useAliases && $this->aliases->hasPath($path)) {
+            $path = $this->aliases->getAlias($path);
+        }
+        $result = $prefix.$path.$paramsSeparator.$paramsString;
+        return $result;
     }
 
 }

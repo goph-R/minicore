@@ -9,6 +9,7 @@ router.base_url = "https://yourdomain.com/"
 router.index = "index.php"
 router.parameter = "route"
 router.use_rewrite = true
+router.use_aliases = false
 error.static_folder = "core/static/"
 logger.level = "error"
 logger.path = "logs/error.log"

@@ -8,12 +8,12 @@ class Framework {
     /** @var array FileInfo[] */
     private $files = [];
 
-    public static function dispatch($appClass, $rootPaths=['core', 'app', 'components']) {
+    public static function dispatch($appClass, $rootPaths=['core', 'app', 'modules']) {
         $framework = new Framework();
         $framework->run($appClass, $rootPaths);
     }
 
-    public function run($appClass, $rootPaths=['core', 'app', 'components']) {
+    public function run($appClass, $rootPaths=['core', 'app', 'modules']) {
         set_error_handler([$this, 'handleError']);
         $this->initClasses($rootPaths);
         $this->add(['app' => $appClass]);
