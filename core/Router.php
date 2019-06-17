@@ -13,8 +13,10 @@ class Router {
 
     public function __construct(Framework $framework) {
         $this->config = $framework->get('config');
-        $this->aliases = $framework->get('RouteAliases');
         $this->useAliases = $this->config->get('router.use_aliases', false);
+        if ($this->useAliases) {
+            $this->aliases = $framework->get('RouteAliases');
+        }
     }
 
     public function addRoute($signature, $callable, $method='GET') {
