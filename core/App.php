@@ -40,7 +40,7 @@ abstract class App {
             'request'       => 'Request',
             'response'      => 'Response',
             'router'        => 'Router',
-            'RouteAliases' => 'RouteAliases',
+            'routeAliases'  => 'RouteAliases',
             'view'          => 'View',
             'helper'        => 'Helper',
             'translation'   => 'Translation',

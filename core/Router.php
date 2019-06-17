@@ -15,7 +15,7 @@ class Router {
         $this->config = $framework->get('config');
         $this->useAliases = $this->config->get('router.use_aliases', false);
         if ($this->useAliases) {
-            $this->aliases = $framework->get('RouteAliases');
+            $this->aliases = $framework->get('routeAliases');
         }
     }
 
