@@ -10,6 +10,7 @@ class Translation {
     private $data;
     private $defaultLocale;
     private $allLocales;
+    private $hasMultiLocales;
     private $namespace = '';
     private $locale;
 
@@ -20,6 +21,7 @@ class Translation {
         $allString = $config->get('translation.all', $this->defaultLocale);
         $all = explode(',', $allString);
         $this->allLocales = array_map(function ($e) { return trim($e); }, $all);
+        $this->hasMultiLocales = count($this->allLocales) > 1;
     }
 
     public function add($namespace, $folder) {
@@ -32,7 +34,7 @@ class Translation {
     }
 
     public function hasMultiLocales() {
-        return count($this->allLocales) > 1;
+        return $this->hasMultiLocales;
     }
 
     public function getLocale() {

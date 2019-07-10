@@ -5,18 +5,18 @@ class Router {
     /** @var Config */
     private $config;
 
-    /** @var RouteAliases */
+    /** @var DbRouteAliases */
     private $aliases;
 
+    /** @var Translation */
+    private $translation;
+
     private $routes = [];
-    private $useAliases;
 
     public function __construct(Framework $framework) {
         $this->config = $framework->get('config');
-        $this->useAliases = $this->config->get('router.use_aliases', false);
-        if ($this->useAliases) {
-            $this->aliases = $framework->get('routeAliases');
-        }
+        $this->aliases = $framework->get('routeAliases');
+        $this->translation = $framework->get('translation');
     }
 
     public function addRoute($signature, $callable, $method='GET') {
@@ -24,7 +24,6 @@ class Router {
         $this->routes[$signature.$method] = $result;
         return $result;
     }
-
 
     public function add($data) {
         foreach ($data as $d) {
@@ -42,7 +41,7 @@ class Router {
      * @return Route
      */
     public function get($path, $method) {
-        if ($this->useAliases && $this->aliases->hasAlias($path)) {
+        if ($this->aliases->hasAlias($path)) {
             $path = $this->aliases->getPath($path);
         }
         foreach ($this->routes as $route) {
@@ -57,23 +56,25 @@ class Router {
         return $this->config->get('router.parameter', 'route');
     }
 
-    // TODO: translate
     public function getUrl($path=null, $params=[], $amp='&amp;') {
         $paramsSeparator = '';
         $paramsString = '';
         $useRewrite = $this->config->get('router.use_rewrite', false);
         $prefix = $this->config->get('router.base_url');
+        if ($this->translation->hasMultiLocales() && $path !== null) {
+            $path = $this->translation->getLocale().'/'.$path;
+        }
         if (!$useRewrite && $path !== null) {
             $prefix .= $this->config->get('router.index');
             if ($path) {
-                $prefix .= '?' . $this->getParameter() . '=';
+                $prefix .= '?'.$this->getParameter().'=';
             }
         }
         if ($params) {
             $paramsString = http_build_query($params, '', $amp);
             $paramsSeparator = $useRewrite ? '?' : $amp;
         }
-        if ($this->useAliases && $this->aliases->hasPath($path)) {
+        if ($this->aliases->hasPath($path)) {
             $path = $this->aliases->getAlias($path);
         }
         $result = $prefix.$path.$paramsSeparator.$paramsString;
