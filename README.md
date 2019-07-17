@@ -36,9 +36,8 @@ class MyApp extends App {
 
     public function init() {
         parent::init();
-        $helloController = $this->framework->get('helloController');
         $this->router->add([
-            ['hello/?', [$helloController, 'index']]
+            ['hello/?', 'helloController', 'index']
         ]);
         $this->view->addFolder(':app', 'app/templates');
     }

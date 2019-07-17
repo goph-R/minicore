@@ -11,27 +11,27 @@ class Router {
     /** @var Translation */
     private $translation;
 
+    /** @var Framework */
+    private $framework;
+
     private $routes = [];
 
     public function __construct(Framework $framework) {
+        $this->framework = $framework;
         $this->config = $framework->get('config');
         $this->aliases = $framework->get('routeAliases');
         $this->translation = $framework->get('translation');
     }
 
-    public function addRoute($path, $callable, $method='GET') {
-        $result = new Route($path, $callable, $method);
-        $this->routes[$path.$method] = $result;
+    public function addRoute($path, $controllerClass, $controllerMethod, $httpMethods=['GET']) {
+        $result = new Route($this->framework, $path, $controllerClass, $controllerMethod, $httpMethods);
+        $this->routes[$path] = $result;
         return $result;
     }
 
     public function add($data) {
         foreach ($data as $d) {
-            if (isset($d[2])) {
-                $this->addRoute($d[0], $d[1], $d[2]);
-            } else {
-                $this->addRoute($d[0], $d[1]);
-            }
+            $this->addRoute($d[0], $d[1], $d[2], isset($d[3]) ? $d[3] : ['GET']);
         }
     }
 

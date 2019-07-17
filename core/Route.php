@@ -2,23 +2,29 @@
 
 class Route {
 
-    private $signature;
-    private $method;
+    /** @var Framework */
+    private $framework;
+
+    private $path;
+    private $httpMethods;
     private $partCount;
     private $parts;
-    private $callable;
+    private $controllerClass;
+    private $controllerMethod;
     private $parameters;
 
-    public function __construct($signature, Callable $callable, $method) {
-        $this->signature = $signature;
-        $this->callable = $callable;
-        $this->parts = explode('/', $signature);
+    public function __construct(Framework $framework, $path, $controllerClass, $controllerMethod, $httpMethods) {
+        $this->framework = $framework;
+        $this->path = $path;
+        $this->controllerClass = $controllerClass;
+        $this->controllerMethod = $controllerMethod;
+        $this->parts = explode('/', $path);
         $this->partCount = count($this->parts);
-        $this->method = $method;
+        $this->httpMethods = $httpMethods;
     }
 
-    public function match($path, $method) {
-        if ($method != $this->method) {
+    public function match($path, $httpMethod) {
+        if (!in_array($httpMethod, $this->httpMethods)) {
             return false;
         }
         $parts = explode('/', $path);
@@ -37,7 +43,8 @@ class Route {
     }
 
     public function call() {
-        call_user_func_array($this->callable, $this->parameters);
+        $controller = $this->framework->get($this->controllerClass);
+        call_user_func_array([$controller, $this->controllerMethod], $this->parameters);
     }
 
 }
