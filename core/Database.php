@@ -13,23 +13,33 @@ class Database {
     /** @var Logger */
     private $logger;
 
+    private $connected = false;
+
     private $className;
     private $objectParams;
 
     public function __construct(Framework $framework, $name) {
         $this->framework = $framework;
         $this->name = $name;
-        $config = $framework->get('config');
+        $this->logger = $framework->get('logger');
+    }
+
+    private function connect() {
+        if ($this->connected) {
+            return;
+        }
+        $config = $this->framework->get('config');
         $dsn = $config->get('database.'.$this->name.'.dsn');
         $user = $config->get('database.'.$this->name.'.user');
         $password = $config->get('database.'.$this->name.'.password');
         $this->pdo = new PDO($dsn, $user, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-        $this->logger = $framework->get('logger');
+        $this->connected = true;
         $this->query("USE ".$config->get('database.'.$this->name.'.name'));
         $this->query("SET NAMES 'utf8'");
     }
 
     public function query($query, $params=[]) {
+        $this->connect();
         $paramsJson = json_encode($params);
         try {
             $this->logger->info("Executing query: $query\nParameters: $paramsJson");

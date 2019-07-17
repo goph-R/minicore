@@ -31,6 +31,9 @@ abstract class App {
 
     protected $routePath;
 
+    /** @var RequestFilter[] */
+    protected $requestFilters = [];
+
     public function __construct(Framework $framework, $env='dev', $configPath='config.ini.php') {
         $this->framework = $framework;
         $framework->add([
@@ -50,15 +53,15 @@ abstract class App {
     }
 
     public function init() {
-        // While we don't have Config and Logger, can't handle the exception properly
+        // While we don't have Config and Logger, can't handle the exceptions properly
         $this->config = $this->framework->get('config');
         $this->logger = $this->framework->get('logger');
         try {
-            $this->router = $this->framework->get('router');
             $this->request = $this->framework->get('request');
             $this->response = $this->framework->get('response');
             $this->translation = $this->framework->get('translation');
             $this->translation->add('validator', 'core/form/validators/translations');
+            $this->router = $this->framework->get('router');
             $helper = $this->framework->get('helper');
             $helper->add('core/helpers/view.php');
             $this->view = $this->framework->get('view');
@@ -77,9 +80,18 @@ abstract class App {
         }
     }
 
-    public function addModule($moduleData) {
-        $module = $this->framework->create($moduleData);
+    public function addModule($moduleClass) {
+        $module = $this->framework->create($moduleClass);
         $this->modules[$module->getId()] = $module;
+    }
+
+    public function hasModule($moduleId) {
+        return isset($this->modules[$moduleId]);
+    }
+
+    public function addRequestFilter($requestFilterClass) {
+        $requestFilter = $this->framework->create($requestFilterClass);
+        $this->requestFilters[] = $requestFilter;
     }
 
     public function run() {
@@ -87,7 +99,9 @@ abstract class App {
             $this->initRoutePath();
             $this->initLocale();
             $this->initModules();
-            $this->callRoute();
+            if (!$this->runRequestFilters()) {
+                $this->callRoute();
+            }
             $this->response->send();
         } catch (Exception $e) {
             $this->handleException($e);
@@ -135,6 +149,15 @@ abstract class App {
             }
         }
         return $result;
+    }
+
+    protected function runRequestFilters() {
+        foreach ($this->requestFilters as $requestFilter) {
+            if ($requestFilter->run()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected function callRoute() {

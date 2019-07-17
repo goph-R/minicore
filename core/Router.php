@@ -19,9 +19,9 @@ class Router {
         $this->translation = $framework->get('translation');
     }
 
-    public function addRoute($signature, $callable, $method='GET') {
-        $result = new Route($signature, $callable, $method);
-        $this->routes[$signature.$method] = $result;
+    public function addRoute($path, $callable, $method='GET') {
+        $result = new Route($path, $callable, $method);
+        $this->routes[$path.$method] = $result;
         return $result;
     }
 

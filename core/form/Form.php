@@ -180,9 +180,14 @@ class Form {
         }
         return $result;
     }
-    
-    private function validateInput($input, $validatorList) {
-        foreach ($validatorList as $validator) {
+
+    /**
+     * @param Input $input
+     * @param Validator[] $validators
+     * @return bool
+     */
+    private function validateInput($input, $validators) {
+        foreach ($validators as $validator) {
             $result = $validator->validate($input->getLabel(), $input->getValue());
             if (!$result) {
                 $input->setError($validator->getMessage());

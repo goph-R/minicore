@@ -17,11 +17,19 @@ class Request {
         $this->processJsonData();
     }
 
+    public function isJson() {
+        return $this->getHeader('Content-Type') == 'application/json';
+    }
+
+    public function getRawInput() {
+        return file_get_contents('php://input');
+    }
+
     private function processJsonData() {
-        if ($this->getHeader('Content-Type') != 'application/json') {
+        if (!$this->isJson()) {
             return;
         }
-        $json = file_get_contents('php://input');
+        $json = $this->getRawInput();
         if (!$json) {
             return;
         }

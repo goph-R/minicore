@@ -58,7 +58,6 @@ class UserSession {
 
     public function addPermission($name) {
         $this->permissions[] = $name;
-        $this->set('permissions', $this->permissions);
     }
 
     public function hasPermission($name) {

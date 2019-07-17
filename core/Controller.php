@@ -50,7 +50,7 @@ abstract class Controller {
         $this->framework->error($code, $content);
     }
 
-    public function redirect($path, $params=[]) {
+    public function redirect($path=null, $params=[]) {
         if (substr($path, 0, 4) == 'http') {
             $url = $path;
         } else {
