@@ -1,6 +1,13 @@
 # minicore
 A simple MVC PHP framework. It uses the PHP PDO for database interactions via the Database and Record classes. The template engine the PHP itself with helper functions. The translations stored in ini files. It has form handling via the Form, Input and Validator classes.
 
+**Warning! Do NOT use in production!**
+This framework is in WIP (Work In Progress) state.
+
+## Available modules
+
+
+
 ## Hello application
 1) Create the following directory structure in the downloaded directory:
 ```
@@ -14,9 +21,21 @@ A simple MVC PHP framework. It uses the PHP PDO for database interactions via th
 
 require_once 'core/Framework.php';
 
-Framework::dispatch(
-    ['MyApp' /* your app class name */, 'dev' /* the config environment */, 'config.ini.php' /* the config file */],
-    ['core', 'app'] /* the directories where the framework will search for the classes recursively */
+Framework::dispatch(    
+    [ // your app class name
+      'MyApp', 
+      
+      // the config environment
+      'dev',
+      
+      // the config file
+      'config.ini.php' 
+    ],
+    
+    [ // the directories where the framework will search for the classes recursively
+        'core',
+        'app'
+    ] 
 );
 ```
 3) Copy the *config.ini.example.php* to *config.ini.php* and set the configuration for your environment. The [all] section contains the default values, you can override those in the [dev] section for the dev environment.
