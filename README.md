@@ -4,10 +4,6 @@ A simple MVC PHP framework. It uses the PHP PDO for database interactions via th
 **Warning! Do NOT use in production!**
 This framework is in WIP (Work In Progress) state.
 
-## Available modules
-
-
-
 ## Hello application
 1) Create the following directory structure in the downloaded directory:
 ```
@@ -99,3 +95,10 @@ Now you can run your Hello application:
 ```
 http://localhost/your_folder_for_the_minicore/index.dev.php?route=hello/World
 ```
+## Available modules
+
+- [Captcha](https://github.com/goph-R/minicore-captcha) - An example module.
+- [DB Route Aliases](https://github.com/goph-R/minicore-db-route-aliases) - Routing aliases stored in database.
+- [Users](https://github.com/goph-R/minicore-users) - Users module for: registration with activation email, forgot password, login, logout, settings with new email address activation.
+ 
+
