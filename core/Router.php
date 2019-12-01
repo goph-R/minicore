@@ -5,7 +5,7 @@ class Router {
     /** @var Config */
     private $config;
 
-    /** @var DbRouteAliases */
+    /** @var RouteAliases */
     private $aliases;
 
     /** @var Translation */
@@ -55,30 +55,58 @@ class Router {
     public function getParameter() {
         return $this->config->get('router.parameter', 'route');
     }
-
+    
+    public function usingRewrite() {
+        return $this->config->get('router.use_rewrite', false);
+    }
+    
+    public function getBaseUrl() {
+        return $this->config->get('router.base_url');
+    }
+    
+    public function getIndex() {
+        return $this->config->get('router.index');
+    }
+    
     public function getUrl($path=null, $params=[], $amp='&amp;') {
         $paramsSeparator = '';
         $paramsString = '';
-        $useRewrite = $this->config->get('router.use_rewrite', false);
-        $prefix = $this->config->get('router.base_url');
-        if ($this->translation->hasMultiLocales() && $path !== null) {
-            $path = $this->translation->getLocale().'/'.$path;
-        }
-        if (!$useRewrite && $path !== null) {
-            $prefix .= $this->config->get('router.index');
-            if ($path) {
-                $prefix .= '?'.$this->getParameter().'=';
-            }
-        }
         if ($params) {
             $paramsString = http_build_query($params, '', $amp);
-            $paramsSeparator = $useRewrite ? '?' : $amp;
+            $paramsSeparator = $this->usingRewrite() ? '?' : $amp;
         }
-        if ($this->aliases->hasPath($path)) {
-            $path = $this->aliases->getAlias($path);
-        }
-        $result = $prefix.$path.$paramsSeparator.$paramsString;
+        $prefix = $this->getPrefix($path);
+        $pathWithLocale = $this->getPathWithLocale($path);
+        $pathAlias = $this->getPathAlias($pathWithLocale);
+        $result = $prefix.$pathAlias.$paramsSeparator.$paramsString;
         return $result;
+    }
+        
+    private function getPrefix($path) {
+        $result = $this->getBaseUrl();
+        if (!$this->usingRewrite() && $path !== null) {
+            $result .= $this->getIndex();
+            if ($path) {
+                $result .= '?'.$this->getParameter().'=';
+            }
+        }
+        return $result;
+    }
+    
+    private function getPathWithLocale($path) {
+        $result = $path;
+        if ($this->translation->hasMultiLocales() && $path !== null) {
+            $result = $this->translation->getLocale().'/'.$path;
+        }
+        return $result;
+    }
+    
+    private function getPathAlias($path) {
+        $result = $path;
+        if ($this->aliases->hasPath($path)) {
+            $result = $this->aliases->getAlias($path);
+        }
+        return $result;        
     }
 
 }

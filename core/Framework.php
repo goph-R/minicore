@@ -60,11 +60,12 @@ class Framework {
         if (!$content) {
             /** @var Config $config */
             $config = $this->get('config');
-            $path = $config->get('error.static_folder') . $code . '.html';
+            $path = $config->get('error.static_folder').$code.'.html';
             if (!file_exists($path)) {
-                throw new RuntimeException("Couldn't find error page for " . $code);
+                $content = "Couldn't find error page for ".$code;
+            } else {
+                $content = file_get_contents($path);
             }
-            $content = file_get_contents($path);
         }
         http_response_code($code);
         $this->finish($content);

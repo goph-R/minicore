@@ -170,7 +170,6 @@ abstract class App {
     }
 
     public function getStaticUrl($path) {
-        $this->logger->info(strpos($path, 'https://'));
         if (strpos($path, 'https://') === 0 || strpos($path, 'http://') === 0) {
             return $path;
         }
