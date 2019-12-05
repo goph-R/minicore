@@ -23,16 +23,16 @@ class Router {
         $this->translation = $framework->get('translation');
     }
 
-    public function addRoute($path, $controllerClass, $controllerMethod, $httpMethods=['GET']) {
-        $result = new Route($this->framework, $path, $controllerClass, $controllerMethod, $httpMethods);
-        $this->routes[$path] = $result;
-        return $result;
-    }
-
     public function add($data) {
         foreach ($data as $d) {
             $this->addRoute($d[0], $d[1], $d[2], isset($d[3]) ? $d[3] : ['GET']);
         }
+    }
+
+    private function addRoute($path, $controllerClass, $controllerMethod, $httpMethods=['GET']) {
+        $result = new Route($this->framework, $path, $controllerClass, $controllerMethod, $httpMethods);
+        $this->routes[$path] = $result;
+        return $result;
     }
 
     /**
