@@ -36,8 +36,8 @@ final class RouterTest extends TestCase {
     
     private function setUpBaseUrlAndRewriteWithMultiLocales() {
         $this->configMock->method('get')->will($this->returnValueMap([
-            ['router.base_url', null, RouterTest::BASE_URL],
-            ['router.use_rewrite', null, true]
+            [Router::CONFIG_BASE_URL, null, RouterTest::BASE_URL],
+            [Router::CONFIG_USE_REWRITE, null, true]
         ]));        
         $this->translationMock->method('hasMultiLocales')->willReturn(true);
         $this->translationMock->method('getLocale')->willReturn(RouterTest::LOCALE);
@@ -45,28 +45,28 @@ final class RouterTest extends TestCase {
     
     public function testGetBaseUrlReturnsTheValueFromConfig() {
         $this->configMock->method('get')->will($this->returnValueMap([
-            ['router.base_url', null, RouterTest::BASE_URL]
+            [Router::CONFIG_BASE_URL, null, RouterTest::BASE_URL]
         ]));        
         $this->assertEquals($this->router->getBaseUrl(), RouterTest::BASE_URL);
     }
     
     public function testGetIndexReturnsTheValueFromConfig() {
         $this->configMock->method('get')->will($this->returnValueMap([
-            ['router.index', null, RouterTest::INDEX]
+            [Router::CONFIG_INDEX, null, RouterTest::INDEX]
         ]));        
         $this->assertEquals($this->router->getIndex(), RouterTest::INDEX);
     }
     
     public function testGetParameterReturnsTheValueFromConfig() {
         $this->configMock->method('get')->will($this->returnValueMap([
-            ['router.parameter', 'route', RouterTest::PARAMETER]
+            [Router::CONFIG_PARAMETER, null, RouterTest::PARAMETER]
         ]));        
         $this->assertEquals($this->router->getParameter(), RouterTest::PARAMETER);
     }
     
     public function testUsingRewriteReturnsTheValueFromConfig() {
         $this->configMock->method('get')->will($this->returnValueMap([
-            ['router.use_rewrite', false, true]
+            [Router::CONFIG_USE_REWRITE, null, true]
         ]));        
         $this->assertEquals($this->router->usingRewrite(), true);
     }

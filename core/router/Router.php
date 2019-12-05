@@ -1,6 +1,11 @@
 <?php
 
 class Router {
+    
+    const CONFIG_INDEX = 'router.index';
+    const CONFIG_BASE_URL = 'router.base_url';
+    const CONFIG_USE_REWRITE = 'router.use_rewrite';
+    const CONFIG_PARAMETER = 'router.parameter';
 
     /** @var Config */
     private $config;
@@ -53,19 +58,19 @@ class Router {
     }
 
     public function getParameter() {
-        return $this->config->get('router.parameter', 'route');
+        return $this->config->get(self::CONFIG_PARAMETER);
     }
     
     public function usingRewrite() {
-        return $this->config->get('router.use_rewrite', false);
+        return $this->config->get(self::CONFIG_USE_REWRITE);
     }
     
     public function getBaseUrl() {
-        return $this->config->get('router.base_url');
+        return $this->config->get(self::CONFIG_BASE_URL);
     }
     
     public function getIndex() {
-        return $this->config->get('router.index');
+        return $this->config->get(self::CONFIG_INDEX);
     }
     
     public function getUrl($path=null, $params=[], $amp='&amp;') {
