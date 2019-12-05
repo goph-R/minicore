@@ -34,6 +34,12 @@ final class RouterTest extends TestCase {
     
     private function setUpBaseUrl() {
         $this->configMock->method('get')->will($this->returnValueMap([
+            ['router.base_url', null, RouterTest::BASE_URL]
+        ]));        
+    }
+    
+    private function setUpBaseUrlAndRewrite() {
+        $this->configMock->method('get')->will($this->returnValueMap([
             ['router.base_url', null, RouterTest::BASE_URL],
             ['router.use_rewrite', null, true]
         ]));        
@@ -53,16 +59,23 @@ final class RouterTest extends TestCase {
         $this->assertEquals($this->router->getBaseUrl(), RouterTest::BASE_URL);
     }
     
-    public function testGetUrlReturnsBaseUrlWhenParameterIsNullAndTranslationHasMultiLocales() {
-        $this->setUpBaseUrl();
+    public function testGetBaseUrlReturnsTheValueFromConfigWhenUsingRewrite() {
+        $this->setUpBaseUrlAndRewrite();
+        $this->assertEquals($this->router->getBaseUrl(), RouterTest::BASE_URL);
+    }
+    
+    public function testGetUrlReturnsBaseUrlWhenUsingRewriteParameterIsNullAndTranslationHasMultiLocales() {
+        $this->setUpBaseUrlAndRewrite();
         $this->setUpMultiLocales();
         $this->assertEquals($this->router->getUrl(null), RouterTest::BASE_URL);
     }
     
-    public function testGetUrlReturnsBaseUrlWithLocaleWhenParameterIsEmptyStringAndTranslationHasMultiLocales() {
-        $this->setUpBaseUrl();
+    public function testGetUrlReturnsBaseUrlWithLocaleWhenUsingRewriteAndParameterIsEmptyStringAndTranslationHasMultiLocales() {
+        $this->setUpBaseUrlAndRewrite();
         $this->setUpMultiLocales();
         $this->setUpNoAliases();
         $this->assertEquals($this->router->getUrl(''), RouterTest::BASE_URL.RouterTest::LOCALE.'/');
     }
+    
+    
 }
