@@ -26,7 +26,6 @@ class CheckboxGroupInput extends Input {
                 $this->checks[] = $defaultValue;
             }
         }
-        
     }
 
     public function fetch() { 

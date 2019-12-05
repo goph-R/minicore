@@ -14,7 +14,8 @@ class Config {
         if (!file_exists($path)) {
             throw new RuntimeException("Couldn't load config: $path");
         }
-        $this->data = array_merge($this->data, parse_ini_file($path, true));
+        $iniData = parse_ini_file($path, true);
+        $this->data = array_merge($this->data, $iniData);
     }
 
     public function get($name, $defaultValue=null) {

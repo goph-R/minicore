@@ -61,7 +61,9 @@ class View {
         if (!isset($this->blocks[$name])) {
             $this->blocks[$name] = '';
         }
-        $this->blockNames[] = $name;
+        if (!in_array($name, $this->blockNames)) {
+            $this->blockNames[] = $name;
+        }
         ob_start();
     }
 
@@ -118,7 +120,7 @@ class View {
         return $__content;
     }
 
-    public function fetchWithLayout($__path, $__vars=[], $__content='') {
+    public function fetchWithLayout($__path, $__vars=[]) {
         ob_start();
         extract($this->vars);
         extract($__vars);

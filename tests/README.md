@@ -1,0 +1,1 @@
+Run the tests from the root directory. Requires PHPUnit.
