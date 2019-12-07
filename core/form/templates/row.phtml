@@ -1,4 +1,8 @@
+<?php if (!$input->isHidden()): ?>
 <div class="form-row" id="form_row_<?= $input->getId() ?>">
-    <?= $this->fetch(':form/label', ['input' => $input]) ?>
-    <?= $this->fetch(':form/input', ['input' => $input]) ?>
+<?= $this->fetch(':form/label', ['input' => $input]) ?>
+<?php endif ?>
+<?= $this->fetch(':form/input', ['input' => $input]) ?>
+<?php if (!$input->isHidden()): ?>
 </div>
+<?php endif ?>

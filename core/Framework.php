@@ -74,7 +74,7 @@ class Framework {
     public function finish($content='') {
         die($content);
     }
-
+    
     public function add($instanceConfigs) {
         foreach ($instanceConfigs as $name => $data) {
             if (is_array($data)) {
@@ -102,6 +102,18 @@ class Framework {
         }
         $instance = new Instance($this, $class, $args);
         return $instance->create();
+    }
+    
+    public function redirect($path, $params=[]) {
+        if (substr($path, 0, 7) == 'http://' || substr($path, 0, 8) == 'https://') {
+            $url = $path;
+        } else {
+            /** @var Router $router */
+            $router = $this->get('router');
+            $url = $router->getUrl($path, $params, '&');
+        }
+        header('Location: '.$url);
+        $this->finish();        
     }
 
     private function addInstance($name, $class, $args=[]) {

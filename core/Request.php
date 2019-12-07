@@ -80,5 +80,9 @@ class Request {
         }
         return $ip;
     }
+    
+    public function getUri() {
+        return $_SERVER['REQUEST_URI'];
+    }
 
 }

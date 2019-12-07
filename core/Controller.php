@@ -51,13 +51,7 @@ abstract class Controller {
     }
 
     public function redirect($path=null, $params=[]) {
-        if (substr($path, 0, 4) == 'http') {
-            $url = $path;
-        } else {
-            $url = $this->router->getUrl($path, $params, '&');
-        }
-        header('Location: '.$url);
-        $this->framework->finish();
+        $this->framework->redirect($path, $params);
     }
 
 }

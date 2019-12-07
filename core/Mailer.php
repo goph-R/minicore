@@ -8,6 +8,26 @@ require 'vendor/PHPMailer/src/PHPMailer.php';
 require 'vendor/PHPMailer/src/SMTP.php';
 
 class Mailer {
+    
+    const CONFIG_FAKE = 'mailer.fake';
+    const CONFIG_SMTP_AUTH = 'mailer.smtp_auth';
+    const CONFIG_DEBUG_LEVEL = 'mailer.debug_level';
+    const CONFIG_VERIFY_SSL = 'mailer.verify_ssl';
+    const CONFIG_HOST = 'mailer.host';
+    const CONFIG_USERNAME = 'mailer.username';
+    const CONFIG_PASSWORD = 'mailer.password';
+    const CONFIG_PORT = 'mailer.port';
+    const CONFIG_SMTP_SECURE = 'mailer.smtp_secure';
+    const CONFIG_CHARSET = 'mailer.charset';
+    const CONFIG_ENCODING = 'mailer.encoding';
+    const CONFIG_FROM_NAME = 'mailer.from.name';
+    const CONFIG_FROM_EMAIL = 'mailer.from.email';
+
+    const DEFAULT_SMTP_AUTH = true;
+    const DEFAULT_SMTP_SECURE = 'ssl';
+    const DEFAULT_CHARSET = 'UTF-8';
+    const DEFAULT_ENCODING = 'quoted-printable';
+    
 
     /** @var Config */
     private $config;
@@ -45,7 +65,7 @@ class Mailer {
     public function send($subject, $templatePath, $vars=[]) {
         $body = $this->view->fetchWithLayout($templatePath, array_merge($this->vars, $vars));
         $result = true;
-        if ($this->config->get('mailer.fake')) {
+        if ($this->config->get(self::CONFIG_FAKE)) {
             $this->fakeSend($subject, $body);
         } else {
             $result = $this->realSend($subject, $body);
@@ -65,16 +85,26 @@ class Mailer {
         $this->logger->info($message);
         return true;
     }
-
+    
+    private function usingSmtpAuth() {
+        return $this->config->get(self::CONFIG_SMTP_AUTH, self::DEFAULT_SMTP_AUTH);
+    }
+    
+    private function getDebugLevel() {
+        return (int)$this->config->get(self::CONFIG_DEBUG_LEVEL);
+    }
+    
+    private function debugOutput($str, $level) {
+        $this->logger->info("debug level $level; message: $str");
+    }
+    
     private function realSend($subject, $body) {
         $result = true;
         $mail = new PHPMailer(true);
-        $mail->SMTPAuth = $this->config->get('mailer.smtp_auth', true);
-        $mail->SMTPDebug = (int)$this->config->get('mailer.debug_level', 0);
-        $mail->Debugoutput = function($str, $level) {
-            $this->logger->info("debug level $level; message: $str");
-        };
-        if (!$this->config->get('mailer.verify_ssl')) {
+        $mail->SMTPAuth = $this->usingSmtpAuth();
+        $mail->SMTPDebug = $this->getDebugLevel();
+        $mail->Debugoutput = $this->debugOutput;
+        if (!$this->config->get(self::CONFIG_VERIFY_SSL)) {
             $this->disableVerify($mail);
         }
         try {
@@ -107,15 +137,15 @@ class Mailer {
     private function setDefaults(PHPMailer $mail) {
         $mail->isHTML(true);
         $mail->isSMTP();
-        $mail->Host = $this->config->get('mailer.host');
+        $mail->Host = $this->config->get(self::CONFIG_HOST);
         $mail->SMTPAuth = true;
-        $mail->Username = $this->config->get('mailer.username');
-        $mail->Password = $this->config->get('mailer.password');
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port = $this->config->get('mailer.port');
-        $mail->Encoding = 'quoted-printable';
-        $mail->CharSet = 'UTF-8';
-        $mail->setFrom($this->config->get('mailer.from.email'), $this->config->get('mailer.from.name'));
+        $mail->Username = $this->config->get(self::CONFIG_USERNAME);
+        $mail->Password = $this->config->get(self::CONFIG_PASSWORD);
+        $mail->SMTPSecure = $this->config->get(self::CONFIG_SMTP_SECURE, self::DEFAULT_SMTP_SECURE);
+        $mail->Port = $this->config->get(self::CONFIG_PORT);
+        $mail->Encoding = $this->config->get(self::CONFIG_ENCODING, self::DEFAULT_ENCODING);
+        $mail->CharSet = $this->config->get(self::CONFIG_CHARSET, self::DEFAULT_CHARSET);
+        $mail->setFrom($this->config->get(self::CONFIG_FROM_EMAIL), $this->config->get(self::CONFIG_FROM_NAME));
     }
 
     private function addAddresses(PHPMailer $mail) {

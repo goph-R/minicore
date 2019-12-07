@@ -22,17 +22,26 @@ class Form {
 
     /** @var Validator[] */
     protected $postValidators = [];
+    
+    /** @var UserSession */
+    protected $userSession;
 
     protected $order = [];
     protected $errors = [];
     protected $name = '';
+    protected $useCsrf = true;
 
     public function __construct(Framework $framework, $name='form') {
         $this->framework = $framework;
         $this->request = $framework->get('request');
         $this->view = $framework->get('view');
         $this->translation = $framework->get('translation');
+        $this->userSession = $framework->get('userSession');
         $this->name = $name;
+    }
+    
+    public function setUseCsrf($useCsrf) {
+        $this->useCsrf = $useCsrf;
     }
 
     public function getName() {
@@ -120,7 +129,7 @@ class Form {
     }
 
     public function addPostValidator($validator) {
-        $this->postValidators[] = $validator;
+        $this->postValidators[] = $this->framework->create($validator);
     }
 
     public function getValue($inputName) {
@@ -140,6 +149,7 @@ class Form {
 
     public function bind() {
         $this->errors = [];
+        $this->addCsrfInput();
         $values = $this->request->get($this->getName());
         foreach ($this->inputs as $input) {
             $name = $input->getName();
@@ -164,7 +174,7 @@ class Form {
         return $result;
     }
 
-    private function validateInputs() {
+    protected function validateInputs() {
         $result = true;        
         foreach ($this->inputs as $inputName => $input) {
             if (!$input->isRequired() && $input->isEmpty()) {
@@ -187,7 +197,7 @@ class Form {
      * @param Validator[] $validators
      * @return bool
      */
-    private function validateInput($input, $validators) {
+    protected function validateInput($input, $validators) {
         foreach ($validators as $validator) {
             $result = $validator->validate($input->getLabel(), $input->getValue());
             if (!$result) {
@@ -198,7 +208,7 @@ class Form {
         return true;
     }
 
-    private function postValidate() {
+    protected function postValidate() {
         $result = true;
         foreach ($this->postValidators as $validator) {
             $subResult = $validator->validate('', null);
@@ -210,7 +220,7 @@ class Form {
         return $result;
     }
 
-    public function fetchHead() {
+    protected function fetchHead() {
         foreach ($this->inputs as $input) {
             foreach ($input->getStyles() as $style => $media) {
                 $this->view->addStyle($style, $media);
@@ -220,8 +230,27 @@ class Form {
             }
         }
     }
+    
+    protected function setCsrfSession() {
+        if (!$this->useCsrf) {
+            return;
+        }
+        $csrf = bin2hex(random_bytes(16));
+        $this->userSession->set('csrf', $csrf);
+    }
+    
+    protected function addCsrfInput() {
+        if (!$this->useCsrf) {
+            return;
+        }
+        $csrf = $this->userSession->get('csrf');
+        $this->addInput('', ['HiddenInput', 'csrf', $csrf]);
+        $this->addPostValidator(['CsrfValidator', 'csrf', $this, 'csrf']);
+    }
 
     public function fetch($path = ':form/form') {
+        $this->setCsrfSession();
+        $this->addCsrfInput();
         $this->fetchHead();
         $result = $this->view->fetch($path, ['form' => $this]);
         return $result;
