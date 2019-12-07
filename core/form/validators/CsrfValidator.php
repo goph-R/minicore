@@ -4,7 +4,7 @@ class CsrfValidator extends Validator {
     
     /** @var UserSession */
     private $userSession;
-    private $userSessionName = '';
+    private $userSessionName;
     
     /** @var Form */
     private $form;

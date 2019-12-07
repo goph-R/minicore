@@ -100,5 +100,6 @@ http://localhost/your_folder_for_the_minicore/index.dev.php?route=hello/World
 - [Captcha](https://github.com/goph-R/minicore-captcha) - An example module.
 - [DB Route Aliases](https://github.com/goph-R/minicore-db-route-aliases) - Routing aliases stored in database.
 - [Users](https://github.com/goph-R/minicore-users) - Users module for: registration with activation email, forgot password, login, logout, settings with new email address activation.
+- [CKEditor](https://github.com/goph-R/minicore-ckeditor) - [CKEditor](https://ckeditor.com) input for the forms.
  
 
