@@ -101,4 +101,17 @@ final class RouterTest extends TestCase {
         $this->assertEquals($this->router->getUrl('test', ['t' => 1]), RouterTest::BASE_URL.RouterTest::INDEX.'?'.RouterTest::PARAMETER.'=test&amp;t=1');
     }
     
+    public function testGetUrlReturnsBaseUrlAndAliasWhenAliasExistsAndUsingRewrite() {
+        $this->setUpBaseUrlAndRewriteWithMultiLocales();
+        $this->routeAliasesMock->method('hasPath')->willReturn(true);
+        $this->routeAliasesMock->method('getAlias')->willReturn('alias_test');
+        $this->assertEquals($this->router->getUrl('test_path'), RouterTest::BASE_URL.'alias_test');
+    }
+    
+    public function testSomething() {
+        $this->setUpBaseUrlAndRewriteWithMultiLocales();
+        $routeMock = $this->createMock(Route::class);
+        $this->frameworkMock->method('create')->willReturn($routeMock);
+    }
+    
 }

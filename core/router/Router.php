@@ -34,12 +34,6 @@ class Router {
         }
     }
 
-    private function addRoute($path, $controllerClass, $controllerMethod, $httpMethods=['GET']) {
-        $result = new Route($this->framework, $path, $controllerClass, $controllerMethod, $httpMethods);
-        $this->routes[$path] = $result;
-        return $result;
-    }
-
     /**
      * @param string $path
      * @param string $method
@@ -87,6 +81,12 @@ class Router {
         return $result;
     }
         
+    private function addRoute($path, $controllerClass, $controllerMethod, $httpMethods) {
+        $result = $this->framework->create('Route', [$path, $controllerClass, $controllerMethod, $httpMethods]);
+        $this->routes[$path] = $result;
+        return $result;
+    }
+
     private function getPrefix($path) {
         $result = $this->getBaseUrl();
         if (!$this->usingRewrite() && $path !== null) {

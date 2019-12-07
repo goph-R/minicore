@@ -1,6 +1,10 @@
 <?php
 
 abstract class App {
+    
+    const CONFIG_STATIC_URL = 'app.static_url';
+    const CONFIG_MEDIA_URL = 'app.media_url';
+    const CONFIG_MEDIA_FOLDER = 'app.media_folder';
 
     /** @var Logger */
     protected $logger;
@@ -10,6 +14,9 @@ abstract class App {
     
     /** @var Router */
     protected $router;
+    
+    /** @var RouteAliases */
+    protected $routeAliases;
 
     /** @var Config */
     protected $config;
@@ -62,6 +69,7 @@ abstract class App {
             $this->translation = $this->framework->get('translation');
             $this->translation->add('validator', 'core/form/validators/translations');
             $this->router = $this->framework->get('router');
+            $this->routeAliases = $this->framework->get('routeAliases');
             $helper = $this->framework->get('helper');
             $helper->add('core/helpers/view.php');
             $this->view = $this->framework->get('view');
@@ -69,14 +77,6 @@ abstract class App {
             $this->view->addFolder(':form', 'core/form/templates');
         } catch (Exception $e) {
             $this->handleException($e);
-        }
-    }
-
-    protected function handleException(Exception $e) {
-        $message = $e->getMessage()."\n".$e->getTraceAsString();
-        $this->logger->error($message);
-        if ($this->config->getEnv() == 'dev') {
-            $this->framework->finish(str_replace("\n", "<br>", $message));
         }
     }
 
@@ -107,10 +107,36 @@ abstract class App {
             $this->handleException($e);
         }
     }
+    
+    public function getStaticUrl($path) {
+        if (strpos($path, 'https://') === 0 || strpos($path, 'http://') === 0) {
+            return $path;
+        }
+        return $this->config->get(self::CONFIG_STATIC_URL).$path;
+    }
+
+    public function getMediaPath($path='') {
+        return $this->config->get(self::CONFIG_MEDIA_FOLDER).$path;
+    }
+
+    public function getMediaUrl($path) {
+        return $this->config->get(self::CONFIG_MEDIA_URL).$path;
+    }    
+
+    protected function handleException(Exception $e) {
+        $message = $e->getMessage()."\n".$e->getTraceAsString();
+        $this->logger->error($message);
+        if ($this->config->getEnv() == 'dev') {
+            $this->framework->finish(str_replace("\n", "<br>", $message));
+        }
+    }
 
     protected function initRoutePath() {
         $routeParameter = $this->router->getParameter();
         $this->routePath = $this->request->get($routeParameter);
+        if ($this->routeAliases->hasAlias($this->routePath)) {
+            $this->routePath = $this->routeAliases->getPath($this->routePath);
+        }    
     }
 
     protected function initLocale() {
@@ -167,21 +193,6 @@ abstract class App {
         } else {
             $this->framework->error(404);
         }
-    }
-
-    public function getStaticUrl($path) {
-        if (strpos($path, 'https://') === 0 || strpos($path, 'http://') === 0) {
-            return $path;
-        }
-        return $this->config->get('app.static_url').$path;
-    }
-
-    public function getMediaPath($path='') {
-        return $this->config->get('app.media_folder').$path;
-    }
-
-    public function getMediaUrl($path) {
-        return $this->config->get('app.media_url').$path;
     }
 
 }

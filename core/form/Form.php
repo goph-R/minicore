@@ -167,12 +167,13 @@ class Form {
     private function validateInputs() {
         $result = true;        
         foreach ($this->inputs as $inputName => $input) {
+            if (!$input->isRequired() && $input->isEmpty()) {
+                continue;
+            }
             if ($input->isRequired() && $input->isEmpty()) {
                 $error = $this->translation->get('validator', 'cant_be_empty');
                 $input->setError($error);
                 $result = false;
-            } else if (!$input->isRequired() && $input->isEmpty()) {
-                continue;
             } else if (isset($this->validators[$inputName])) {
                 $validatorList = $this->validators[$inputName];
                 $result &= $this->validateInput($input, $validatorList);

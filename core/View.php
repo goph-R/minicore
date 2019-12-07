@@ -31,7 +31,7 @@ class View {
         if ($perPos == -1) {
             return $result;
         }
-        $name = substr($path,0, $perPos);
+        $name = substr($path, 0, $perPos);
         if (!isset($this->folders[$name])) {
             return $result;
         }
