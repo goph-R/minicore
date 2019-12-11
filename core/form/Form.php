@@ -152,9 +152,11 @@ class Form {
         $this->addCsrfInput();
         $values = $this->request->get($this->getName());
         foreach ($this->inputs as $input) {
-            $name = $input->getName();
-            $value = isset($values[$name]) ? $values[$name] : null;
-            $input->setValue($value);
+            if ($input->needsBind()) {
+                $name = $input->getName();
+                $value = isset($values[$name]) ? $values[$name] : null;
+                $input->setValue($value);
+            }
         }
     }
 

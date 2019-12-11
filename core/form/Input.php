@@ -26,6 +26,7 @@ abstract class Input {
     protected $required = true;
     protected $label = '';
     protected $hidden = false;
+    protected $bind = true;
 
     public function __construct(Framework $framework, $name, $defaultValue = '') {
         $this->config = $framework->get('config');
@@ -34,6 +35,14 @@ abstract class Input {
         $this->name = $name;
         $this->defaultValue = $defaultValue;
         $this->value = $defaultValue;
+    }
+    
+    public function needsBind() {
+        return $this->bind;
+    }
+    
+    public function addClass($class) {
+        $this->classes[] = $class;
     }
 
     public function setForm($form) {

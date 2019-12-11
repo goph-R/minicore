@@ -4,16 +4,17 @@ class SubmitInput extends Input {
 
     public function __construct(Framework $framework, $name, $defaultValue = '') {
         parent::__construct($framework, $name, $defaultValue);
-        $this->setRequired(false);
+        $this->required = false;
+        $this->bind = false;
     }
 
     public function fetch() {
-        $result = '<input type="submit"';
-        $result .= ' id="'.$this->getId().'"';
-        $result .= ' name="'.$this->form->getName().'['.$this->getName().']"';
-        $result .= ' value="'.$this->view->escape($this->getValue()).'"';
+        $result = '<button type="submit"';
         $result .= $this->getClassHtml();
-        $result .= '>';
+        $result .= ' id="'.$this->getId().'"';
+        $result .= ' name="'.$this->form->getName().'['.$this->getName().']">';
+        $result .= $this->view->escape($this->getValue());
+        $result .= '</button>';
         return $result;
     }
 

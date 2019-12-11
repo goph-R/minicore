@@ -97,7 +97,7 @@ final class RouterTest extends TestCase {
             [Router::CONFIG_BASE_URL, null, RouterTest::BASE_URL],
             [Router::CONFIG_INDEX, null, RouterTest::INDEX],
             [Router::CONFIG_PARAMETER, null, RouterTest::PARAMETER]
-        ]));         
+        ]));    
         $this->assertEquals($this->router->getUrl('test', ['t' => 1]), RouterTest::BASE_URL.RouterTest::INDEX.'?'.RouterTest::PARAMETER.'=test&amp;t=1');
     }
     

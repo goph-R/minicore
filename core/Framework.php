@@ -7,6 +7,8 @@ class Framework {
 
     /** @var array FileInfo[] */
     private $files = [];
+    
+    private $classChanges = [];
 
     public static function dispatch($appClass, $rootPaths=['core', 'app', 'modules']) {
         $framework = new Framework();
@@ -93,12 +95,19 @@ class Framework {
         $result = $this->instances[$name]->create($args);
         return $result;
     }
+    
+    public function changeClass($original, $new) {
+        $this->classChanges[$original] = $new;
+    }
 
     public function create($class, $args=[]) {
         if (is_array($class)) {
             $tmp = $class;
             $class = array_shift($tmp);
             $args = $tmp;
+        }
+        if (isset($this->classChanges[$class])) {
+            $class = $this->classChanges[$class];
         }
         $instance = new Instance($this, $class, $args);
         return $instance->create();
