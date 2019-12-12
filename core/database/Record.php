@@ -109,9 +109,7 @@ abstract class Record {
             if ($allowed && !in_array($name, $allowed)) {
                 continue;
             }
-            $this->checkIsPropertyAccessible($name);
-            $this->$name = $value;
-            $this->modifiedArray[] = $name;
+            $this->set($name, $value);
         }
     }
 

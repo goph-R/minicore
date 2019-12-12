@@ -75,11 +75,25 @@ abstract class App {
             $this->view = $this->framework->get('view');
             $this->view->addFolder(':app', 'core/templates');
             $this->view->addFolder(':form', 'core/form/templates');
+            $this->initRoutePath();
+            $this->initLocale();
+            $this->initModules();
         } catch (Exception $e) {
             $this->handleException($e);
         }
     }
 
+    public function run() {
+        try {
+            if (!$this->runRequestFilters()) {
+                $this->callRoute();
+            }
+            $this->response->send();
+        } catch (Exception $e) {
+            $this->handleException($e);
+        }
+    }
+ 
     public function addModule($moduleClass) {
         $module = $this->framework->create($moduleClass);
         $this->modules[$module->getId()] = $module;
@@ -93,21 +107,7 @@ abstract class App {
         $requestFilter = $this->framework->create($requestFilterClass);
         $this->requestFilters[] = $requestFilter;
     }
-
-    public function run() {
-        try {
-            $this->initRoutePath();
-            $this->initLocale();
-            $this->initModules();
-            if (!$this->runRequestFilters()) {
-                $this->callRoute();
-            }
-            $this->response->send();
-        } catch (Exception $e) {
-            $this->handleException($e);
-        }
-    }
-    
+   
     public function getStaticUrl($path) {
         if (strpos($path, 'https://') === 0 || strpos($path, 'http://') === 0) {
             return $path;

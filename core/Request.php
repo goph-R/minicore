@@ -1,14 +1,18 @@
 <?php
 
 class Request {
+    
+    const CONFIG_URI_PREFIX = 'request.uri_prefix';
 
-    private $data;
-    private $cookies;
-    private $method;
-    private $server;
-    private $headers;
+    protected $config;
+    protected $data;
+    protected $cookies;
+    protected $method;
+    protected $server;
+    protected $headers;
 
     public function __construct(Framework $framework) {
+        $this->config = $framework->get('config');
         $this->data = $_REQUEST;
         $this->cookies = $_COOKIE;
         $this->method = $_SERVER['REQUEST_METHOD'];
@@ -82,7 +86,8 @@ class Request {
     }
     
     public function getUri() {
-        return $_SERVER['REQUEST_URI'];
+        $uriPrefix = $this->config->get(self::CONFIG_URI_PREFIX);
+        return substr($_SERVER['REQUEST_URI'], strlen($uriPrefix));
     }
 
 }
