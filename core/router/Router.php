@@ -74,8 +74,8 @@ class Router {
             $paramsString = http_build_query($params, '', $amp);
             $paramsSeparator = $this->usingRewrite() ? '?' : $amp;
         }
-        $prefix = $this->getPrefix($path);
         $pathWithLocale = $this->getPathWithLocale($path);
+        $prefix = $this->getPrefix($pathWithLocale);
         $pathAlias = $this->getPathAlias($pathWithLocale);
         $result = $prefix.$pathAlias.$paramsSeparator.$paramsString;
         return $result;
@@ -101,7 +101,8 @@ class Router {
     private function getPathWithLocale($path) {
         $result = $path;
         if ($this->translation->hasMultiLocales() && $path !== null) {
-            $result = $this->translation->getLocale().'/'.$path;
+            $postfix = $path ? '/'.$path : '';
+            $result = $this->translation->getLocale().$postfix;
         }
         return $result;
     }
