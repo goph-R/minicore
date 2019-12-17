@@ -84,7 +84,9 @@ class Form {
     public function getValues() {
         $result = [];
         foreach ($this->inputs as $input) {
-            $result[$input->getName()] = $input->getValue();
+            if ($input->needsBind()) {
+                $result[$input->getName()] = $input->getValue();
+            }
         }
         return $result;
     }
@@ -250,11 +252,12 @@ class Form {
         $this->addPostValidator(['CsrfValidator', 'csrf', $this, 'csrf']);
     }
 
-    public function fetch($path = ':form/form') {
+    public function fetch($path = ':form/form', $params=[]) {
         $this->setCsrfSession();
         $this->addCsrfInput();
         $this->fetchHead();
-        $result = $this->view->fetch($path, ['form' => $this]);
+        $allParams = array_merge($params, ['form' => $this]);
+        $result = $this->view->fetch($path, $allParams);
         return $result;
     }
 

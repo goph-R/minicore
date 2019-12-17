@@ -66,13 +66,13 @@ class Database {
         return $result;
     }
 
-    public function fetchColumn($query, $params=[]) {
+    public function fetchColumn($query, $params=[], $index=0) {
         $stmt = $this->query($query, $params);
-        $result = $stmt->fetchColumn();
+        $result = $stmt->fetchColumn($index);
         $stmt = null;
         return $result;
     }
-
+    
     public function fetch($classData, $query, $params=[]) {
         $result = $this->fetchAll($classData, $query, $params);
         return isset($result[0]) ? $result[0] : null;

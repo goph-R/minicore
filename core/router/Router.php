@@ -71,6 +71,9 @@ class Router {
         $paramsSeparator = '';
         $paramsString = '';
         if ($params) {
+            if (isset($params[$this->getParameter()])) {
+                unset($params[$this->getParameter()]);
+            }
             $paramsString = http_build_query($params, '', $amp);
             $paramsSeparator = $this->usingRewrite() ? '?' : $amp;
         }

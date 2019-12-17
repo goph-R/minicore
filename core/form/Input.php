@@ -27,6 +27,8 @@ abstract class Input {
     protected $label = '';
     protected $hidden = false;
     protected $bind = true;
+    protected $rowBegin = true;
+    protected $rowEnd = true;
 
     public function __construct(Framework $framework, $name, $defaultValue = '') {
         $this->config = $framework->get('config');
@@ -39,6 +41,22 @@ abstract class Input {
     
     public function needsBind() {
         return $this->bind;
+    }
+    
+    public function setRowBegin($value) {
+        $this->rowBegin = $value;
+    }
+    
+    public function hasRowBegin() {
+        return $this->rowBegin;
+    }
+    
+    public function setRowEnd($value) {
+        $this->rowEnd = $value;
+    }
+    
+    public function hasRowEnd() {
+        return $this->rowEnd;
     }
     
     public function addClass($class) {

@@ -32,6 +32,9 @@ abstract class App {
 
     /** @var View */
     protected $view;
+    
+    /** @var Helper */
+    protected $helper;
 
     /** @var Module[] */
     protected $modules = [];
@@ -70,11 +73,12 @@ abstract class App {
             $this->translation->add('validator', 'core/form/validators/translations');
             $this->router = $this->framework->get('router');
             $this->routeAliases = $this->framework->get('routeAliases');
-            $helper = $this->framework->get('helper');
-            $helper->add('core/helpers/view.php');
+            $this->helper = $this->framework->get('helper');
+            $this->helper->add('core/helpers/view.php');
             $this->view = $this->framework->get('view');
             $this->view->addFolder(':app', 'core/templates');
             $this->view->addFolder(':form', 'core/form/templates');
+            $this->view->addFolder(':pager', 'core/pager/templates');
             $this->initRoutePath();
             $this->initLocale();
             $this->initModules();
@@ -121,7 +125,7 @@ abstract class App {
 
     public function getMediaUrl($path) {
         return $this->config->get(self::CONFIG_MEDIA_URL).$path;
-    }    
+    }  
 
     protected function handleException(Exception $e) {
         $message = $e->getMessage()."\n".$e->getTraceAsString();

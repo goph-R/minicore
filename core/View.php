@@ -10,6 +10,7 @@ class View {
     private $layout = [];
     private $folders = [];
     private $useLayout = true;
+    private $pathChanges = [];
 
     public function __construct(Framework $framework) {
     }
@@ -17,12 +18,19 @@ class View {
     public function setUseLayout($value) {
         $this->useLayout = $value;
     }
+    
+    public function changePath($original, $new) {
+        $this->pathChanges[$original] = $new;
+    }
 
     public function addFolder($name, $folder) {
         $this->folders[$name] = $folder;
     }
 
     public function getRealPath($path, $extension) {
+        if (isset($this->pathChanges[$path])) {
+            $path = $this->pathChanges[$path];
+        }
         $result = $path.'.'.$extension;
         if ($path[0] != ':') {
             return $result;

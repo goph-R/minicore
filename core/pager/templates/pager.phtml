@@ -1,0 +1,33 @@
+<div class="pager">
+    <a class="pagination-previous"<?= $pager->hasPrev() ? '' : ' disabled' ?> href="<?= $pager->getUrl($pager->getPage() - 1, $params) ?>">&lt;</a>
+    <a class="pagination-next"<?= $pager->hasNext() ? '' : ' disabled' ?> href="<?= $pager->getUrl($pager->getPage() + 1, $params) ?>">&gt;</a>
+    <ul class="pager-list">
+        <!-- first -->
+        <?php if ($pager->getStart() != 0): ?>
+            <li>
+                <a href="<?= $pager->getUrl(0, $params) ?>" class="pager-link<?= $pager->getPage() == 0 ? ' is-current' : '' ?>">1</a>
+            </li>
+        <?php endif ?>
+        <?php if ($pager->hasLeftHidden()): ?>
+            <li><span class="pager-hidden">&hellip;</span></li>
+        <?php endif ?>
+        <!-- between -->
+        <?php for ($i = $pager->getStart(); $i <= $pager->getEnd(); $i++): ?>
+            <li>
+                <a href="<?= $pager->getUrl($i, $params) ?>" class="pager-link<?= $pager->getPage() == $i ? ' is-current' : '' ?>">
+                    <?= $i + 1 ?>
+                </a>
+            </li>
+        <?php endfor ?>
+        <?php if ($pager->hasRightHidden()): ?>
+            <li><span class="pager-hidden">&hellip;</span></li>
+        <?php endif ?>
+        <?php if ($pager->getEnd() != $pager->getMax()): ?>
+            <li>
+                <a href="<?= $pager->getUrl($pager->getMax(), $params) ?>" class="pager-link<?= $pager->getPage() == $pager->getMax() ? ' is-current' : '' ?>">
+                    <?= $pager->getMax() + 1 ?>
+                </a>
+            </li>
+        <?php endif ?>
+    </ul>
+</div>

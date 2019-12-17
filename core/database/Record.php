@@ -40,17 +40,18 @@ abstract class Record {
         return in_array($name, self::$protectedNames);
     }
 
-    private function throwPropertyException($message, $name) {
+    protected function throwPropertyException($message, $name) {
         $methodString = get_class($this).'::'.$name;
         throw new RuntimeException($message.': '.$methodString);
     }
+    
+    public function columnExists($name) {
+        return property_exists($this, $name) && !$this->isNameProtected($name);
+    }
 
-    private function checkIsPropertyAccessible($name) {
-        if (!property_exists($this, $name)) {
-            $this->throwPropertyException('Tried to access a non-existing property', $name);
-        }
-        if ($this->isNameProtected($name)) {
-            $this->throwPropertyException('Tried to access a protected property', $name);
+    protected function checkIsPropertyAccessible($name) {
+        if (!$this->columnExists($name)) {
+            $this->throwPropertyException('Tried to access a non-existing or protected property', $name);
         }
     }
 

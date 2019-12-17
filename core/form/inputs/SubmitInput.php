@@ -11,9 +11,8 @@ class SubmitInput extends Input {
     public function fetch() {
         $result = '<button type="submit"';
         $result .= $this->getClassHtml();
-        $result .= ' id="'.$this->getId().'"';
-        $result .= ' name="'.$this->form->getName().'['.$this->getName().']">';
-        $result .= $this->view->escape($this->getValue());
+        $result .= ' id="'.$this->getId().'">';
+        $result .= $this->getValue();
         $result .= '</button>';
         return $result;
     }
