@@ -5,44 +5,65 @@ class Framework {
     /** @var Instance[] */
     private $instances = [];
 
-    /** @var array FileInfo[] */
-    private $files = [];
-    
+    private $files = [];    
     private $classChanges = [];
 
-    public static function dispatch($appClass, $rootPaths=['core', 'app', 'modules']) {
+    public static function dispatch($appClass, $rootPaths=['core', 'app', 'modules'], $useCache=true) {
         $framework = new Framework();
-        $framework->run($appClass, $rootPaths);
+        $framework->run($appClass, $rootPaths, $useCache);
     }
 
-    public function run($appClass, $rootPaths=['core', 'app', 'modules']) {
+    public function run($appClass, $rootPaths=['core', 'app', 'modules'], $useCache=true) {
         set_error_handler([$this, 'handleError']);
-        $this->initClasses($rootPaths);
+        $this->initClasses($rootPaths, $useCache);
         $this->add(['app' => $appClass]);
         /** @var App $app */
         $app = $this->get('app');
         $app->init();
         $app->run();
     }
+    
+    protected function getFilesCachePath() {
+        return getcwd().'/cache/files.cache';
+    }
+    
+    protected function loadFilesFromCache() {
+        $path = $this->getFilesCachePath();
+        if (file_exists($path)) {
+            $this->files = unserialize(file_get_contents($path));
+            return true;
+        }
+        return false;
+    }
+    
+    public function saveFilesToCache() {
+        file_put_contents($this->getFilesCachePath(), serialize($this->files));
+    }
 
-    public function initClasses($rootPaths) {
+    public function initClasses($rootPaths, $useCache) {
+        spl_autoload_register([$this, 'loadClass']);
+        if ($useCache && $this->loadFilesFromCache()) {
+            return;
+        }
         foreach ($rootPaths as $rootPath) {
             $directory = new RecursiveDirectoryIterator($rootPath, RecursiveDirectoryIterator::SKIP_DOTS);
             $fileIterator = new RecursiveIteratorIterator($directory, RecursiveIteratorIterator::LEAVES_ONLY);
             foreach ($fileIterator as $file) {
                 if (substr($file->getFilename(), -4) == '.php' && $file->isReadable()) {
-                    $this->files[] = $file;
+                    $this->files[$file->getFilename()] = $file->getPathname();
                 }
             }
         }
-        spl_autoload_register([$this, 'loadClass']);
+        if ($useCache) {
+            $this->saveFilesToCache();
+        }
     }
 
     public function loadClass($class) {
         $filename = $class.'.php';
-        foreach ($this->files as $file) {
-            if ($file->getFilename() == $filename) {
-                require_once $file->getPathname();
+        foreach ($this->files as $name => $path) {
+            if ($name == $filename) {
+                require_once $path;
                 break;
             }
         }

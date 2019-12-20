@@ -3,6 +3,7 @@ app/**
 core/cli/**
 modules/**
 logs/*
+cache/*
 index.php
 index.dev.php
 index.test.php

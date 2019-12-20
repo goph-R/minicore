@@ -5,10 +5,11 @@ A simple MVC PHP framework. It uses the PHP PDO for database interactions via th
 This framework is in WIP (Work In Progress) state.
 
 ## Hello application
-1) Create the following directory structure in the downloaded directory:
+1) Create the following directory structure in the downloaded directory, for "cache" and "logs" the application has to have write rights:
 ```
 ~/app
     /templates     
+~/cache
 ~/logs
 ```
 2) Create the index.dev.php: 
