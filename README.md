@@ -87,6 +87,7 @@ You should have the following structure at this point:
         hello.phtml
     MyApp.php
     HelloController.php
+~/cache (empty)
 ~/core (the minicore files)
 ~/logs (empty)
 config.ini.php
