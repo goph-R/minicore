@@ -9,7 +9,7 @@ class Pager {
     protected $view;
     
     protected $route = '';
-    protected $pageParam = 'p';
+    protected $pageParam = 'page';
     protected $page = 0;
     protected $limit = 25;
     protected $count;

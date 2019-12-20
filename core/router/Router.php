@@ -84,6 +84,15 @@ class Router {
         return $result;
     }
         
+    public function getPathWithLocale($path) {
+        $result = $path;
+        if ($this->translation->hasMultiLocales() && $path !== null) {
+            $postfix = $path ? '/'.$path : '';
+            $result = $this->translation->getLocale().$postfix;
+        }
+        return $result;
+    }
+
     private function addRoute($path, $controllerClass, $controllerMethod, $httpMethods) {
         $result = $this->framework->create('Route', [$path, $controllerClass, $controllerMethod, $httpMethods]);
         $this->routes[$path] = $result;
@@ -97,15 +106,6 @@ class Router {
             if ($path) {
                 $result .= '?'.$this->getParameter().'=';
             }
-        }
-        return $result;
-    }
-    
-    private function getPathWithLocale($path) {
-        $result = $path;
-        if ($this->translation->hasMultiLocales() && $path !== null) {
-            $postfix = $path ? '/'.$path : '';
-            $result = $this->translation->getLocale().$postfix;
         }
         return $result;
     }
