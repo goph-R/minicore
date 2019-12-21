@@ -113,6 +113,9 @@ abstract class App {
     }
    
     public function getStaticUrl($path) {
+        if (substr($path, 0, 1) == '/') {
+            $path = $this->router->getBaseUrl().$path;
+        }
         if (strpos($path, 'https://') === 0 || strpos($path, 'http://') === 0) {
             return $path;
         }
