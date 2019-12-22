@@ -129,5 +129,17 @@ class Database {
         $sql = "UPDATE $tableName SET $pairsString WHERE $condition";
         $this->query($sql, $params);
     }
+    
+    public function getInConditionAndParams($values, $name='in') {
+        $params = [];
+        $in = "";
+        foreach ($values as $i => $item) {
+            $key = ":".$name.$i;
+            $in .= "$key,";
+            $params[$key] = $item;
+        }
+        $condition = rtrim($in, ",");
+        return ['condition' => $condition, 'params' => $params];
+    }    
 
 }

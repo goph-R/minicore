@@ -63,22 +63,10 @@ abstract class App {
     }
 
     public function init() {
-        // While we don't have Config and Logger, can't handle the exceptions properly
         $this->config = $this->framework->get('config');
         $this->logger = $this->framework->get('logger');
         try {
-            $this->request = $this->framework->get('request');
-            $this->response = $this->framework->get('response');
-            $this->translation = $this->framework->get('translation');
-            $this->translation->add('validator', 'core/form/validators/translations');
-            $this->router = $this->framework->get('router');
-            $this->routeAliases = $this->framework->get('routeAliases');
-            $this->helper = $this->framework->get('helper');
-            $this->helper->add('core/helpers/view.php');
-            $this->view = $this->framework->get('view');
-            $this->view->addFolder(':app', 'core/templates');
-            $this->view->addFolder(':form', 'core/form/templates');
-            $this->view->addFolder(':pager', 'core/pager/templates');
+            $this->initInstances();
             $this->initRoutePath();
             $this->initLocale();
             $this->initModules();
@@ -86,7 +74,7 @@ abstract class App {
             $this->handleException($e);
         }
     }
-
+    
     public function run() {
         try {
             if (!$this->runRequestFilters()) {
@@ -113,13 +101,7 @@ abstract class App {
     }
    
     public function getStaticUrl($path) {
-        if (substr($path, 0, 1) == '/') {
-            $path = $this->router->getBaseUrl().$path;
-        }
-        if (strpos($path, 'https://') === 0 || strpos($path, 'http://') === 0) {
-            return $path;
-        }
-        return $this->config->get(self::CONFIG_STATIC_URL).$path;
+        return $this->getFullUrl(self::CONFIG_STATIC_URL, $path);
     }
 
     public function getMediaPath($path='') {
@@ -127,15 +109,22 @@ abstract class App {
     }
 
     public function getMediaUrl($path) {
-        return $this->config->get(self::CONFIG_MEDIA_URL).$path;
+        return $this->getFullUrl(self::CONFIG_MEDIA_URL, $path);
     }  
-
-    protected function handleException(Exception $e) {
-        $message = $e->getMessage()."\n".$e->getTraceAsString();
-        $this->logger->error($message);
-        if ($this->config->getEnv() == 'dev') {
-            $this->framework->finish(str_replace("\n", "<br>", $message));
-        }
+    
+    protected function initInstances() {
+        $this->request = $this->framework->get('request');
+        $this->response = $this->framework->get('response');
+        $this->translation = $this->framework->get('translation');
+        $this->translation->add('validator', 'core/form/validators/translations');
+        $this->router = $this->framework->get('router');
+        $this->routeAliases = $this->framework->get('routeAliases');
+        $this->helper = $this->framework->get('helper');
+        $this->helper->add('core/helpers/view.php');
+        $this->view = $this->framework->get('view');
+        $this->view->addFolder(':app', 'core/templates');
+        $this->view->addFolder(':form', 'core/form/templates');
+        $this->view->addFolder(':pager', 'core/pager/templates');
     }
 
     protected function initRoutePath() {
@@ -156,18 +145,12 @@ abstract class App {
             $len = strlen($locale);
             $routeStart = substr($this->routePath, 0, $len);
             $startsWithLocale = $this->routePath == $locale || $routeStart.'/' == $locale.'/';
-            if ($startsWithLocale) {
-                $this->translation->setLocale($locale);
-                $this->routePath = substr($this->routePath, $len + 1, strlen($this->routePath) - $len);
-                break;
+            if (!$startsWithLocale) {
+                continue;
             }
-        }
-    }
-
-    protected function initModules() {
-        // TODO: dependency tree
-        foreach ($this->modules as $module) {
-            $module->init();
+            $this->translation->setLocale($locale);
+            $this->routePath = substr($this->routePath, $len + 1, strlen($this->routePath) - $len);
+            break;
         }
     }
 
@@ -184,6 +167,31 @@ abstract class App {
         return $result;
     }
 
+    protected function initModules() {
+        // TODO: dependency tree
+        foreach ($this->modules as $module) {
+            $module->init();
+        }
+    }
+    
+    protected function getFullUrl($configName, $path) {
+        if (substr($path, 0, 1) == '/') {
+            $path = $this->router->getBaseUrl().substr($path, 1);
+        }
+        if (strpos($path, 'https://') === 0 || strpos($path, 'http://') === 0) {
+            return $path;
+        }
+        return $this->config->get($configName).$path;
+    }
+    
+    protected function handleException(Exception $e) {
+        $message = $e->getMessage()."\n".$e->getTraceAsString();
+        $this->logger->error($message);
+        if ($this->config->getEnv() == 'dev') {
+            $this->framework->finish(str_replace("\n", "<br>", $message));
+        }
+    }
+    
     protected function runRequestFilters() {
         foreach ($this->requestFilters as $requestFilter) {
             if ($requestFilter->run()) {

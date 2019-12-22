@@ -7,6 +7,9 @@ abstract class Record {
 
     /** @var Framework */
     protected $framework;
+    
+    /** @var Translation */
+    protected $translation;
 
     protected $dbInstanceName = 'database';
     protected $tableName = null;
@@ -14,21 +17,27 @@ abstract class Record {
     protected $autoId = true;
     protected $modifiedArray = [];
     protected $newRecord = true;
+    protected $referenceList = [];
+    protected $localizedList = [];
 
     private static $protectedNames = [
         'db',
         'framework',
+        'translation',
         'dbInstanceName',
         'tableName',
         'primaryKeyName',
         'autoId',
         'modifiedArray',
         'newRecord',
+        'referenceList',
+        'localizedList',
         'protectedNames'
     ];
 
     public function __construct(Framework $framework, $dbInstanceName=null) {
         $this->framework = $framework;
+        $this->translation = $framework->get('translation');
         $this->db = $framework->get($dbInstanceName == null ? $this->dbInstanceName : $dbInstanceName);
     }
 
@@ -38,6 +47,10 @@ abstract class Record {
 
     protected function isNameProtected($name) {
         return in_array($name, self::$protectedNames);
+    }
+    
+    protected function isReference($name) {
+        return in_array($name, $this->referenceList);
     }
 
     protected function throwPropertyException($message, $name) {
@@ -55,10 +68,26 @@ abstract class Record {
         }
     }
 
-    private function getCamelCasePropertyName($name) {
+    private function getPropertyFromMethod($name) {
         $tmp = strtolower(preg_replace('/[A-Z]+/' ,'_$0', $name));
         $propertyName = substr($tmp, 4, strlen($tmp) - 4);
         return $propertyName;
+    }
+    
+    private function getMethodFromProperty($name) { // TODO: better solution?
+        $result = '';
+        $nextUpper = true;
+        for ($i = 0; $i < strlen($name); $i++) {
+            if ($nextUpper) {
+                $result .= strtoupper($name[$i]);
+                $nextUpper = false;
+            } else if ($name[$i] == '_') {
+                $nextUpper = true;
+            } else {
+                $result .= $name[$i];
+            }
+        }
+        return $result;
     }
 
     public function __call($name, $args) {
@@ -66,15 +95,12 @@ abstract class Record {
         if ($method != 'get' && $method != 'set') {
             $this->throwPropertyException('Called an undefined method', $name);
         }
-        $propertyName = $this->getCamelCasePropertyName($name);
+        $propertyName = $this->getPropertyFromMethod($name);
         if ($method == 'get') {
-            return $this->get($propertyName);
+            return $this->getPropertyValue($propertyName);
         }
-        if (!isset($args[0])) {
-            $this->throwPropertyException('Tried to set without a value', $name);
-        }
-        $this->set($propertyName, $args[0]);
-        return null;
+        $value = isset($args[0]) ? $args[0] : null; 
+        $this->setPropertyValue($propertyName, $value);
     }
 
     public function getPrimaryKeyName() {
@@ -94,22 +120,39 @@ abstract class Record {
         $this->newRecord = false;
     }
 
-    public function set($name, $value) {
+    public function setPropertyValue($name, $value) {
         $this->checkIsPropertyAccessible($name);
         $this->modifiedArray[] = $name;
         $this->$name = $value;
     }
 
-    public function get($name) {
+    public function getPropertyValue($name) {
         $this->checkIsPropertyAccessible($name);
         return $this->$name;
+    }
+    
+    public function get($name) {
+        $methodName = 'get'.$this->getMethodFromProperty($name);
+        if (method_exists($this, $methodName)) {
+            return call_user_func([$this, $methodName]);
+        }
+        return $this->getPropertyValue($name);
+    }
+    
+    public function set($name, $value) {
+        $methodName = 'set'.$this->getMethodFromProperty($name);
+        if (method_exists($this, $methodName)) {
+            call_user_func_array([$this, $methodName], [$value]);
+        } else {
+            $this->setPropertyValue($name, $value);
+        }        
     }
 
     public function setArray($array, $allowed=[]) {
         foreach ($array as $name => $value) {
             if ($allowed && !in_array($name, $allowed)) {
                 continue;
-            }
+            }            
             $this->set($name, $value);
         }
     }
@@ -117,9 +160,9 @@ abstract class Record {
     public function getArray() {
         $vars = get_object_vars($this);
         $result = [];
-        foreach ($vars as $name => $value) {
-            if (!$this->isNameProtected($name)) {
-                $result[$name] = $value;
+        foreach (array_keys($vars) as $name) {
+            if (!$this->isNameProtected($name) && !$this->isReference($name)) {
+                $result[$name] = $this->get($name);
             }
         }
         return $result;
@@ -128,9 +171,9 @@ abstract class Record {
     public function getModifiedArray() {
         $vars = get_object_vars($this);
         $result = [];
-        foreach ($vars as $name => $value) {
-            if (!$this->isNameProtected($name) && in_array($name, $this->modifiedArray)) {
-                $result[$name] = $value;
+        foreach (array_keys($vars) as $name) {
+            if (!$this->isNameProtected($name) && !$this->isReference($name) && in_array($name, $this->modifiedArray)) {
+                $result[$name] = $this->get($name);
             }
         }
         return $result;

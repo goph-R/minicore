@@ -5,7 +5,7 @@ class Framework {
     /** @var Instance[] */
     private $instances = [];
 
-    private $files = [];    
+    private $files = [];
     private $classChanges = [];
 
     public static function dispatch($appClass, $rootPaths=['core', 'app', 'modules'], $useCache=true) {
@@ -143,7 +143,7 @@ class Framework {
             $url = $router->getUrl($path, $params, '&');
         }
         header('Location: '.$url);
-        $this->finish();        
+        $this->finish();
     }
 
     private function addInstance($name, $class, $args=[]) {
