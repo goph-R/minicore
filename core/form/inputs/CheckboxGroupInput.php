@@ -8,11 +8,11 @@ class CheckboxGroupInput extends Input {
     private $labels;
 
     public function __construct(Framework $framework, $name, $labelsByValues=[], $checks=[]) {
-        parent::__construct($framework, $name, array_keys($labelsByValues));
-        $this->checks = $checks;
+        parent::__construct($framework, $name, null);
         $this->labels = $labelsByValues;
         $this->trimValue = false;
         $this->required = false;
+        $this->setValue($checks);
     }
 
     public function setValue($value) {
@@ -21,7 +21,7 @@ class CheckboxGroupInput extends Input {
             $value = [];
         }
         $this->checks = [];
-        foreach ($this->defaultValue as $defaultValue) {
+        foreach (array_keys($this->labels) as $defaultValue) {
             if (in_array($defaultValue, $value)) {
                 $this->checks[] = $defaultValue;
             }
@@ -30,7 +30,7 @@ class CheckboxGroupInput extends Input {
 
     public function fetch() { 
         $result = '<div class="checkbox-group">';
-        foreach ($this->defaultValue as $defaultValue) {
+        foreach (array_keys($this->labels) as $defaultValue) {
             $id = $this->getId().'_'.$this->escapeName($defaultValue);
             $inputName = $this->form->getName().'['.$this->getName().'][]';
             $result .= '<div class="checkbox-group-row">';
