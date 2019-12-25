@@ -29,6 +29,11 @@ abstract class Input {
     protected $bind = true;
     protected $rowBegin = true;
     protected $rowEnd = true;
+    protected $attributes = [];
+    protected $locale = null;
+    protected $mustValidate = false;
+    
+    abstract public function fetch();
 
     public function __construct(Framework $framework, $name, $defaultValue = '') {
         $this->config = $framework->get('config');
@@ -39,6 +44,42 @@ abstract class Input {
         $this->value = $defaultValue;
     }
     
+    public function isMustValidate() {
+        return $this->mustValidate;
+    }
+    
+    public function setMustValidate($value) {
+        $this->mustValidate = $value;
+    }
+    
+    public function setLocale($value) {
+        $this->locale = $value;
+    }
+    
+    public function getLocale() {
+        return $this->locale;
+    }
+            
+    public function setAttribute($name, $value) {
+        $this->attributes[$name] = $value;
+    }
+    
+    public function getAttributesHtml() {
+        $result = '';
+        foreach ($this->attributes as $name => $value) {
+            if ($value === null) {
+                continue;
+            }
+            $result .= ' '.htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+            if ($value === true) {
+                continue;
+            }
+            $result .= '="';
+            $result .= htmlspecialchars($value, ENT_QUOTES, 'UTF-8').'"';
+        }
+        return $result;
+    }
+
     public function needsBind() {
         return $this->bind;
     }

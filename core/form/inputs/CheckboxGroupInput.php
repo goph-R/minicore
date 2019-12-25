@@ -15,34 +15,35 @@ class CheckboxGroupInput extends Input {
         $this->setValue($checks);
     }
 
-    public function setValue($value) {
-        parent::setValue($value);
-        if (!is_array($value)) {
-            $value = [];
+    public function setValue($values) {
+        if (!is_array($values)) {
+            $values = [];
         }
         $this->checks = [];
-        foreach (array_keys($this->labels) as $defaultValue) {
-            if (in_array($defaultValue, $value)) {
-                $this->checks[] = $defaultValue;
+        foreach (array_keys($this->labels) as $value) {
+            if (in_array($value, $values)) {
+                $this->checks[] = $value;
             }
         }
+        parent::setValue($this->checks);
     }
 
     public function fetch() { 
         $result = '<div class="checkbox-group">';
-        foreach (array_keys($this->labels) as $defaultValue) {
-            $id = $this->getId().'_'.$this->escapeName($defaultValue);
+        foreach (array_keys($this->labels) as $value) {
+            $id = $this->getId().'_'.$this->escapeName($value);
             $inputName = $this->form->getName().'['.$this->getName().'][]';
             $result .= '<div class="checkbox-group-row">';
             $result .= '<input type="checkbox" id="'.$id.'" name="'.$inputName.'"';
-            $result .= ' value="'.$this->view->escape($defaultValue).'"';
+            $result .= ' value="'.$this->view->escape($value).'"';
+            $result .= $this->getAttributesHtml();
             $result .= $this->getClassHtml();
-            if (in_array($defaultValue, $this->checks)) {
+            if (in_array($value, $this->checks)) {
                 $result .= ' checked="checked"';
             }
             $result .= '>';            
-            if ($this->labels[$defaultValue]) {
-                $result .= '<label for="'.$id.'">'.$this->labels[$defaultValue].'</label>';
+            if ($this->labels[$value]) {
+                $result .= '<label for="'.$id.'">'.$this->labels[$value].'</label>';
             }
             $result .= '</div>';
         }

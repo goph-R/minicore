@@ -116,7 +116,7 @@ abstract class App {
         $this->request = $this->framework->get('request');
         $this->response = $this->framework->get('response');
         $this->translation = $this->framework->get('translation');
-        $this->translation->add('validator', 'core/form/validators/translations');
+        $this->translation->add('core', 'core/translations');
         $this->router = $this->framework->get('router');
         $this->routeAliases = $this->framework->get('routeAliases');
         $this->helper = $this->framework->get('helper');

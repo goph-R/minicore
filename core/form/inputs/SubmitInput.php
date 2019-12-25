@@ -10,6 +10,7 @@ class SubmitInput extends Input {
 
     public function fetch() {
         $result = '<button type="submit"';
+        $result .= $this->getAttributesHtml();
         $result .= $this->getClassHtml();
         $result .= ' id="'.$this->getId().'">';
         $result .= $this->getValue();

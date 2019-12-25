@@ -52,6 +52,14 @@ abstract class Record {
     protected function isReference($name) {
         return in_array($name, $this->referenceList);
     }
+    
+    protected function isLocalized($name) {
+        return in_array($name, $this->localizedList);
+    }
+    
+    public function hasLocalizedText() {
+        return !empty($this->localizedList);
+    }
 
     protected function throwPropertyException($message, $name) {
         $methodString = get_class($this).'::'.$name;
@@ -143,6 +151,7 @@ abstract class Record {
         $methodName = 'set'.$this->getMethodFromProperty($name);
         if (method_exists($this, $methodName)) {
             call_user_func_array([$this, $methodName], [$value]);
+            $this->modifiedArray[] = $name;
         } else {
             $this->setPropertyValue($name, $value);
         }        
@@ -156,12 +165,16 @@ abstract class Record {
             $this->set($name, $value);
         }
     }
+    
+    protected function canSave($name) {
+        return !$this->isNameProtected($name) && !$this->isReference($name) && !$this->isLocalized($name);
+    }
 
     public function getArray() {
         $vars = get_object_vars($this);
         $result = [];
         foreach (array_keys($vars) as $name) {
-            if (!$this->isNameProtected($name) && !$this->isReference($name)) {
+            if ($this->canSave($name)) {
                 $result[$name] = $this->get($name);
             }
         }
@@ -172,27 +185,73 @@ abstract class Record {
         $vars = get_object_vars($this);
         $result = [];
         foreach (array_keys($vars) as $name) {
-            if (!$this->isNameProtected($name) && !$this->isReference($name) && in_array($name, $this->modifiedArray)) {
+            if ($this->canSave($name) && in_array($name, $this->modifiedArray)) {
                 $result[$name] = $this->get($name);
             }
         }
         return $result;
     }
 
-    public function save() {
+    public function save(array $localizedData=[]) {
         if ($this->isNew()) {
             $this->db->insert($this->tableName, $this->getArray());
             if ($this->autoId) {
-                $pkName = $this->primaryKeyName;
+                $pkName = $this->getPrimaryKeyName();
                 $this->$pkName = $this->db->lastInsertId();
             }
         } else {
-            $this->db->update(
-                $this->tableName, $this->getModifiedArray(),
-                $this->getPrimaryKeyName().' = :pk', [':pk' => $this->getPrimaryKeyValue()]
-            );
+            $modifiedArray = $this->getModifiedArray();
+            if ($modifiedArray) {
+                $this->db->update(
+                    $this->tableName, $this->getModifiedArray(),
+                    $this->getPrimaryKeyName().' = :pk', [':pk' => $this->getPrimaryKeyValue()]
+                );
+            }
         }
+        if ($localizedData && $this->localizedList) {
+            $this->saveLocalized($localizedData);
+        }
+        $this->newRecord = false;
         $this->modifiedArray = [];
     }
+    
+    protected function saveLocalized(array $localizedData) {
+        if ($this->isNew()) {
+            $saveData = $this->getSaveDataForLocalized($localizedData);
+            foreach ($this->translation->getAllLocales() as $locale) {
+                $this->db->insert($this->tableName.'_text', $saveData[$locale]);
+            }
+        } else {
+            $saveData = $this->getSaveDataForLocalized($localizedData, false);
+            foreach ($this->translation->getAllLocales() as $locale) {
+                $params = ['locale' => $locale, 'text_id' => $this->getId()];
+                $this->db->update(
+                    $this->tableName.'_text', $saveData[$locale],
+                    'text_id = :text_id AND locale = :locale', $params
+                );
+            }            
+        }
+    }
+    
+    protected function getSaveDataForLocalized(array $localizedData, $forInsert=true) {
+        $saveData = [];
+        foreach ($this->translation->getAllLocales() as $locale) {
+            $saveData[$locale] = [];
+            if ($forInsert) {
+                $saveData[$locale] = [
+                    'text_id' => $this->getId(),
+                    'locale' => $locale
+                ];
+            }
+            foreach ($this->localizedList as $localized) {
+                $key = $localized.'_'.$locale;
+                if (!isset($localizedData[$key])) {
+                    continue;
+                }
+                $saveData[$locale][$localized] = $localizedData[$key];
+            }
+        }
+        return $saveData;
+    }    
 
 }

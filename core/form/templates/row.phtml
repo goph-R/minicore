@@ -1,5 +1,5 @@
 <?php if (!$input->isHidden() && $input->hasRowBegin()): ?>
-<div class="form-row" id="form_row_<?= $input->getId() ?>">
+<div class="form-row<?= $input->getLocale() ? ' row-locale-'.$input->getLocale() : '' ?>" id="form_row_<?= $input->getId() ?>">
 <?= $this->fetch(':form/label', ['input' => $input]) ?>
 <?php endif ?>
 <?= $this->fetch(':form/input', ['input' => $input]) ?>

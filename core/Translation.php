@@ -32,6 +32,10 @@ class Translation {
     public function getAllLocales() {
         return $this->allLocales;
     }
+    
+    public function getLocaleName($locale) {
+        return $this->get('core', 'locale_'.$locale);
+    }
 
     public function hasMultiLocales() {
         return $this->hasMultiLocales;

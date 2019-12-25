@@ -81,16 +81,17 @@ class Form {
         return $this->inputs[$name];
     }
 
-    public function getValues() {
+    public function getValues($localized=false) {
         $result = [];
         foreach ($this->inputs as $input) {
-            if ($input->needsBind()) {
-                $result[$input->getName()] = $input->getValue();
+            $inputLocalized = (boolean)$input->getLocale();
+            if ($input->needsBind() && $inputLocalized == $localized) {
+                $result[$input->getName()] = $input->getValue();                    
             }
         }
         return $result;
     }
-
+    
     public function getInputs() {
         $result = [];
         foreach ($this->order as $name) {
@@ -180,18 +181,18 @@ class Form {
 
     protected function validateInputs() {
         $result = true;        
-        foreach ($this->inputs as $inputName => $input) {
-            if (!$input->isRequired() && $input->isEmpty()) {
+        foreach ($this->inputs as $inputName => $input) {            
+            if (!$input->isRequired() && $input->isEmpty() && !$input->isMustValidate()) {
                 continue;
-            }
+            }            
             if ($input->isRequired() && $input->isEmpty()) {
-                $error = $this->translation->get('validator', 'cant_be_empty');
+                $error = $this->translation->get('core', 'cant_be_empty');
                 $input->setError($error);
                 $result = false;
             } else if (isset($this->validators[$inputName])) {
                 $validatorList = $this->validators[$inputName];
                 $result &= $this->validateInput($input, $validatorList);
-            }
+            } 
         }
         return $result;
     }

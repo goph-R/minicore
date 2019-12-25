@@ -31,6 +31,7 @@ class CheckboxInput extends Input {
         $result .= ' id="'.$this->getId().'"';
         $result .= ' name="'.$this->form->getName().'['.$this->getName().']"';
         $result .= ' value="'.$this->view->escape($this->defaultValue).'"';
+        $result .= $this->getAttributesHtml();
         $result .= $this->getClassHtml();
         if ($this->checked) {
             $result .= ' checked="checked"';

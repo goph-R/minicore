@@ -13,6 +13,7 @@ class SelectInput extends Input {
         $result = '<select';
         $result .= ' id="'.$this->getId().'"';
         $result .= ' name="'.$this->form->getName().'['.$this->getName().']"';
+        $result .= $this->getAttributesHtml();
         $result .= $this->getClassHtml();
         $result .= '>';
         $result .= $this->fetchRecursive($this->options, null);
