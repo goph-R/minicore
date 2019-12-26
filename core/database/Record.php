@@ -19,6 +19,7 @@ abstract class Record {
     protected $newRecord = true;
     protected $referenceList = [];
     protected $localizedList = [];
+    protected $localizedTexts = [];
 
     private static $protectedNames = [
         'db',
@@ -32,6 +33,7 @@ abstract class Record {
         'newRecord',
         'referenceList',
         'localizedList',
+        'localizedTexts',
         'protectedNames'
     ];
 
@@ -211,7 +213,7 @@ abstract class Record {
         if ($localizedData && $this->localizedList) {
             $this->saveLocalized($localizedData);
         }
-        $this->newRecord = false;
+        $this->setAsOld();
         $this->modifiedArray = [];
     }
     
@@ -252,6 +254,28 @@ abstract class Record {
             }
         }
         return $saveData;
-    }    
+    }
+    
+    public function findLocalizedTexts() {
+        $result = [];
+        $query = "SELECT * FROM {$this->tableName}_text WHERE text_id = :id";
+        $rows = $this->db->fetchAllArray($query, [':id' => $this->getId()]);
+        foreach ($rows as $row) {
+            $result[$row['locale']] = $row;
+        }
+        return $result;
+    }
+    
+    public function getLocalizedTexts() {
+        if (!$this->localizedTexts) {
+            $this->localizedTexts = $this->findLocalizedTexts();
+        }
+        return $this->localizedTexts;
+    }
+
+    public function getLocalizedText($locale, $name) {
+        $texts = $this->getLocalizedTexts();
+        return isset($texts[$locale][$name]) ? $texts[$locale][$name] : '';
+    }
 
 }
