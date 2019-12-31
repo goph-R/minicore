@@ -40,13 +40,13 @@ class Database {
 
     public function query($query, $params=[]) {
         $this->connect();
-        $paramsJson = json_encode($params);
+        $paramsJson = $params ? "\nParameters: ".json_encode($params) : '';
         try {
-            $this->logger->info("Executing query: $query\nParameters: $paramsJson");
+            $this->logger->info("Executing query: \n$query$paramsJson");
             $stmt = $this->pdo->prepare($query);
             $stmt->execute($params);
         } catch (RuntimeException $e) {
-            $this->logger->error("Database query error!\nThe query was: $query\nParameters: $paramsJson");
+            $this->logger->error("SQL query error!\nThe query was:\n$query$paramsJson");
             throw $e;
         }
         return $stmt;
