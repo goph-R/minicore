@@ -32,6 +32,7 @@ abstract class Input {
     protected $attributes = [];
     protected $locale = null;
     protected $mustValidate = false;
+    protected $file = false;
     
     abstract public function fetch();
 
@@ -62,6 +63,10 @@ abstract class Input {
             
     public function setAttribute($name, $value) {
         $this->attributes[$name] = $value;
+    }
+    
+    public function isFile() {
+        return $this->file;
     }
     
     public function getAttributesHtml() {

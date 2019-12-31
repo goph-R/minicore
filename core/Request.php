@@ -4,21 +4,47 @@ class Request {
     
     const CONFIG_URI_PREFIX = 'request.uri_prefix';
 
+    protected $framework;
     protected $config;
     protected $data;
     protected $cookies;
     protected $method;
     protected $server;
     protected $headers;
+    protected $uploadedFiles = [];
 
     public function __construct(Framework $framework) {
+        $this->framework = $framework;
         $this->config = $framework->get('config');
         $this->data = $_REQUEST;
         $this->cookies = $_COOKIE;
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->server = $_SERVER;
         $this->headers = getallheaders();
+        $this->createUploadedFiles();
         $this->processJsonData();
+    }
+    
+    protected function createUploadedFiles() {
+        if (empty($_FILES)) {
+            return;
+        }
+        foreach ($_FILES as $name => $file) {
+            if (!is_array($file['name'])) {
+                $uploadedFile = $this->framework->create(['UploadedFile', $file]);
+                $this->uploadedFiles[$name] = $uploadedFile;
+            } else {
+                $this->createUploadedFilesFromArray($name, $file);
+            }            
+        }        
+    }
+    
+    protected function createUploadedFilesFromArray($name, array $file) {
+        $this->uploadedFiles[$name] = [];
+        foreach (array_keys($file['name']) as $index) {
+            $uploadedFile = $this->framework->create(['UploadedFile', $file, $index]);
+            $this->uploadedFiles[$name][$index] = $uploadedFile;
+        }
     }
 
     public function isJson() {
@@ -44,6 +70,10 @@ class Request {
         foreach ($data as $name => $value) {
             $this->set($name, $value);
         }
+    }
+    
+    public function getAll() {
+        return $this->data;
     }
 
     public function get($name, $defaultValue=null) {
@@ -75,19 +105,23 @@ class Request {
     }
 
     public function getIp() {
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])){
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        if (!empty($this->server['HTTP_CLIENT_IP'])) {
+            $ip = $this->server['HTTP_CLIENT_IP'];
+        } else if (!empty($this->server['HTTP_X_FORWARDED_FOR'])){
+            $ip = $this->server['HTTP_X_FORWARDED_FOR'];
         } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = $this->server['REMOTE_ADDR'];
         }
         return $ip;
     }
     
     public function getUri() {
         $uriPrefix = $this->config->get(self::CONFIG_URI_PREFIX);
-        return substr($_SERVER['REQUEST_URI'], strlen($uriPrefix));
+        return substr($this->server['REQUEST_URI'], strlen($uriPrefix));
     }
 
+    public function getUploadedFile($name) {
+        return isset($this->uploadedFiles[$name]) ? $this->uploadedFiles[$name] : null;
+    }
+    
 }

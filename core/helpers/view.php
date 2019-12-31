@@ -5,9 +5,9 @@ function static_url($path) {
     return $app->getStaticUrl($path);
 }
 
-function route_url($path=null, $params=[]) {
+function route_url($path=null, $params=[], $amp='&amp;') {
     $router = $GLOBALS['framework']->get('router');
-    return $router->getUrl($path, $params);
+    return $router->getUrl($path, $params, $amp);
 }
 
 function css($src, $media='all') {

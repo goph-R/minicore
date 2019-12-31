@@ -129,6 +129,10 @@ abstract class Record {
     public function setAsOld() {
         $this->newRecord = false;
     }
+    
+    public function setAsNew() {
+        $this->newRecord = true;
+    }
 
     public function setPropertyValue($name, $value) {
         $this->checkIsPropertyAccessible($name);
@@ -172,11 +176,11 @@ abstract class Record {
         return !$this->isNameProtected($name) && !$this->isReference($name) && !$this->isLocalized($name);
     }
 
-    public function getArray() {
+    public function getArray($fields=[]) {
         $vars = get_object_vars($this);
         $result = [];
         foreach (array_keys($vars) as $name) {
-            if ($this->canSave($name)) {
+            if ($this->canSave($name) && (!$fields || in_array($name, $fields))) {
                 $result[$name] = $this->get($name);
             }
         }
