@@ -20,6 +20,7 @@ abstract class Record {
     protected $referenceList = [];
     protected $localizedList = [];
     protected $localizedTexts = [];
+    protected $protectedList = [];
 
     private static $protectedNames = [
         'db',
@@ -48,7 +49,7 @@ abstract class Record {
     }
 
     protected function isNameProtected($name) {
-        return in_array($name, self::$protectedNames);
+        return in_array($name, self::$protectedNames) || in_array($name, $this->protectedList);
     }
     
     protected function isReference($name) {
