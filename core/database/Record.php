@@ -35,6 +35,7 @@ abstract class Record {
         'referenceList',
         'localizedList',
         'localizedTexts',
+        'protectedList',
         'protectedNames'
     ];
 
