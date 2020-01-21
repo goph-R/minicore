@@ -85,7 +85,7 @@ class Form {
         $result = [];
         foreach ($this->inputs as $input) {
             $inputLocalized = (boolean)$input->getLocale();
-            if ($input->needsBind() && $inputLocalized == $localized) {
+            if ($input->needsBind() && !$input->isReadOnly() && $inputLocalized == $localized) {
                 $result[$input->getName()] = $input->getValue();                    
             }
         }

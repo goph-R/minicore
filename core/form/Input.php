@@ -33,6 +33,7 @@ abstract class Input {
     protected $locale = null;
     protected $mustValidate = false;
     protected $file = false;
+    protected $readOnly = false;
     
     abstract public function fetch();
 
@@ -43,6 +44,19 @@ abstract class Input {
         $this->name = $name;
         $this->defaultValue = $defaultValue;
         $this->value = $defaultValue;
+    }
+    
+    public function isReadOnly() {
+        return $this->readOnly;
+    }
+    
+    public function setReadOnly($value) {
+        if ($value) {
+            $this->attributes['readonly'] = true;
+        } else if (isset($this->attributes['readonly'])) {
+            unset($this->attributes['readonly']);
+        }
+        $this->readOnly = $value;
     }
     
     public function isMustValidate() {
