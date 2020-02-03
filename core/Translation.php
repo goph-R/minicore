@@ -2,6 +2,11 @@
 
 class Translation {
 
+    const LOCALE_NAMES = [
+        'en' => 'English',
+        'hu' => 'Magyar'
+    ];
+    
     /**
      * @var Request
      */
@@ -34,7 +39,7 @@ class Translation {
     }
     
     public function getLocaleName($locale) {
-        return $this->get('core', 'locale_'.$locale);
+        return isset(self::LOCALE_NAMES[$locale]) ? self::LOCALE_NAMES[$locale] : null;
     }
 
     public function hasMultiLocales() {
@@ -44,7 +49,7 @@ class Translation {
     public function getLocale() {
         return $this->locale;
     }
-
+  
     public function setLocale($locale) {
         $this->locale = $locale;
     }

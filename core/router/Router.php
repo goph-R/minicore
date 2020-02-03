@@ -67,28 +67,51 @@ class Router {
         return $this->config->get(self::CONFIG_INDEX);
     }
     
-    public function getUrl($path=null, $params=[], $amp='&amp;') {
+    public function getCurrentUrlWithLocale($locale, $amp='&amp;') {
+        $request = $this->framework->get('request');
+        $params = $request->getAll();
+        $routeParam = $this->getParameter();
+        $path = '';
+        if (isset($params[$routeParam])) {
+            $path = $params[$routeParam];            
+        }
+        if ($this->translation->hasMultiLocales()) {
+            // remove locale from current path
+            $pos = strpos($path, '/');
+            if ($pos != -1) {
+                $path = substr($path, $pos + 1, strlen($path) - $pos - 1);
+            } else {
+                $path = '';
+            }
+        }
+        return $this->getUrl($path, $params, $amp, $locale);
+    }    
+        
+    public function getUrl($path=null, $params=[], $amp='&amp;', $locale=null) {
         $paramsSeparator = '';
         $paramsString = '';
+        $routeParam = $this->getParameter();
         if ($params) {
-            if (isset($params[$this->getParameter()])) {
-                unset($params[$this->getParameter()]);
+            // remove route param if exists
+            if (isset($params[$routeParam])) {
+                unset($params[$routeParam]);
             }
             $paramsString = http_build_query($params, '', $amp);
             $paramsSeparator = $this->usingRewrite() ? '?' : $amp;
         }
-        $pathWithLocale = $this->getPathWithLocale($path);
+        $pathWithLocale = $this->getPathWithLocale($path, $locale);
         $prefix = $this->getPrefix($pathWithLocale);
         $pathAlias = $this->getPathAlias($pathWithLocale);
         $result = $prefix.$pathAlias.$paramsSeparator.$paramsString;
         return $result;
     }
-        
-    public function getPathWithLocale($path) {
+    
+    public function getPathWithLocale($path, $locale=null) {
         $result = $path;
         if ($this->translation->hasMultiLocales() && $path !== null) {
             $postfix = $path ? '/'.$path : '';
-            $result = $this->translation->getLocale().$postfix;
+            $locale = $locale === null ? $this->translation->getLocale() : $locale;
+            $result = $locale.$postfix;
         }
         return $result;
     }

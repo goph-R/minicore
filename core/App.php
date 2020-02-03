@@ -134,6 +134,10 @@ abstract class App {
             $this->routePath = $this->routeAliases->getPath($this->routePath);
         }    
     }
+    
+    public function getRoutePath() {
+        return $this->routePath;
+    }
 
     protected function initLocale() {
         $this->translation->setLocale($this->getAcceptLocale());
