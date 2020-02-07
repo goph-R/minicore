@@ -78,7 +78,7 @@ class Router {
         if ($this->translation->hasMultiLocales()) {
             // remove locale from current path
             $pos = strpos($path, '/');
-            if ($pos != -1) {
+            if ($pos) {
                 $path = substr($path, $pos + 1, strlen($path) - $pos - 1);
             } else {
                 $path = '';
