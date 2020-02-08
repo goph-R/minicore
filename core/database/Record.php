@@ -44,6 +44,8 @@ abstract class Record {
         $this->translation = $framework->get('translation');
         $this->db = $framework->get($dbInstanceName == null ? $this->dbInstanceName : $dbInstanceName);
     }
+    
+    public function init() {}
 
     public function getTableName() {
         return $this->tableName;
@@ -165,9 +167,9 @@ abstract class Record {
         }        
     }
 
-    public function setArray($array, $allowed=[]) {
+    public function setArray($array, $fields=[]) {
         foreach ($array as $name => $value) {
-            if ($allowed && !in_array($name, $allowed)) {
+            if ($fields && !in_array($name, $fields)) {
                 continue;
             }            
             $this->set($name, $value);

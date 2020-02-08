@@ -84,6 +84,7 @@ class Database {
         /** @var Record[] $result */
         $result = $stmt->fetchAll(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $this->className, $this->objectParams);
         foreach ($result as $r) {
+            $r->init();
             $r->setAsOld();
         }
         $stmt = null;

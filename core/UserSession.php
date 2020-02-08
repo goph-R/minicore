@@ -2,6 +2,8 @@
 
 class UserSession {
 
+    const SESSION_ID = 'id';
+    
     /** @var Request */
     private $request;
 
@@ -24,6 +26,14 @@ class UserSession {
     public function set($name, $value) {
         $key = 'user.'.$name;
         $_SESSION[$key] = $value;
+    }
+    
+    public function getId() {
+        return $this->get(self::SESSION_ID);
+    }
+    
+    public function setId($value) {
+        $this->set(self::SESSION_ID, $value);
     }
 
     public function getHash() {
