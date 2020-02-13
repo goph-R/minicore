@@ -2,7 +2,7 @@
 
 class SelectInput extends Input {
 
-    private $options = [];
+    protected $options = [];
 
     public function __construct(Framework $framework, $name, $defaultValue='', $options=[]) {
         parent::__construct($framework, $name, $defaultValue);
