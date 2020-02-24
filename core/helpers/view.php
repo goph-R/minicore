@@ -97,3 +97,11 @@ function text($namespace, $name, $params=[]) {
     $translation = $GLOBALS['framework']->get('translation');
     return $translation->get($namespace, $name, $params);
 }
+
+function date_view($date) {
+    if (!$date) {
+        return '';
+    }
+    $time = strtotime($date);
+    return str_replace(' ', '&nbsp;', date('Y-m-d H:i', $time));
+}

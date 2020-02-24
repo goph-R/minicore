@@ -36,7 +36,7 @@ class Request {
             } else {
                 $this->createUploadedFilesFromArray($name, $file);
             }            
-        }        
+        }
     }
     
     protected function createUploadedFilesFromArray($name, array $file) {

@@ -1,6 +1,6 @@
 <div class="pager">
-    <a class="pagination-previous"<?= $pager->hasPrev() ? '' : ' disabled' ?> href="<?= $pager->getUrl($pager->getPage() - 1, $params) ?>">&lt;</a>
-    <a class="pagination-next"<?= $pager->hasNext() ? '' : ' disabled' ?> href="<?= $pager->getUrl($pager->getPage() + 1, $params) ?>">&gt;</a>
+    <a class="pager-previous"<?= $pager->hasPrev() ? '' : ' disabled' ?> href="<?= $pager->getUrl($pager->getPage() - 1, $params) ?>">&lt;</a>
+    <a class="pager-next"<?= $pager->hasNext() ? '' : ' disabled' ?> href="<?= $pager->getUrl($pager->getPage() + 1, $params) ?>">&gt;</a>
     <ul class="pager-list">
         <!-- first -->
         <?php if ($pager->getStart() != 0): ?>

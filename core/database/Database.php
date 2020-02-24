@@ -141,6 +141,18 @@ class Database {
         }
         $condition = rtrim($in, ",");
         return ['condition' => $condition, 'params' => $params];
-    }    
+    }
+    
+    public function beginTransaction() {
+        return $this->pdo->beginTransaction();
+    }
+    
+    public function commit() {
+        return $this->pdo->commit();
+    }
+    
+    public function rollBack() {
+        return $this->pdo->rollBack();
+    }
 
 }

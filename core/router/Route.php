@@ -44,6 +44,9 @@ class Route {
 
     public function call() {
         $controller = $this->framework->get($this->controllerClass);
+        if (!method_exists($controller, $this->controllerMethod)) {
+            throw new RuntimeException('The method '.get_class($controller).'::'.$this->controllerMethod." doesn't exist.");
+        }
         call_user_func_array([$controller, $this->controllerMethod], $this->parameters);
     }
 
