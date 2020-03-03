@@ -98,10 +98,31 @@ function text($namespace, $name, $params=[]) {
     return $translation->get($namespace, $name, $params);
 }
 
-function date_view($date) {
-    if (!$date) {
+function date_view($dateStr) {
+    if (!$dateStr) {
         return '';
     }
-    $time = strtotime($date);
+    $time = strtotime($dateStr);
     return str_replace(' ', '&nbsp;', date('Y-m-d H:i', $time));
+}
+
+function date_diff_view($dateStr) {
+    $result = '';
+    $now = new DateTime('now');
+    $date = new DateTime($dateStr);
+    $interval = date_diff($now, $date);
+    if ($interval->y > 0) {
+        $result = $interval->format('%y '.text('core', 'diff_years'));
+    } else if ($interval->m > 0) {
+        $result = $interval->format('%m '.text('core', 'diff_months'));
+    } else if ($interval->d > 0) {
+        $result = $interval->format('%d '.text('core', 'diff_days'));
+    } else if ($interval->h > 0) {
+        $result = $interval->format('%h '.text('core', 'diff_hours'));
+    } else if ($interval->i > 0) {
+        $result = $interval->format('%i '.text('core', 'diff_minutes'));
+    } else {
+        $result = text('core', 'diff_recently');
+    }
+    return str_replace(' ', '&nbsp;', $result);
 }
