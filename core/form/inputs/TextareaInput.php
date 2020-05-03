@@ -5,8 +5,8 @@ class TextareaInput extends Input {
     protected $type = 'text';    
     protected $placeholder = '';
 
-    public function __construct(Framework $framework, $name, $defaultValue = '') {
-        parent::__construct($framework, $name, $defaultValue);
+    public function __construct($name, $defaultValue = '') {
+        parent::__construct($name, $defaultValue);
         $this->trimValue = false;
     }
 

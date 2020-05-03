@@ -2,9 +2,6 @@
 
 abstract class Controller {
 
-    /** @var Framework */
-    protected $framework;
-
     /** @var Config */
     protected $config;
 
@@ -26,15 +23,15 @@ abstract class Controller {
     /** @var UserSession */
     protected $userSession;
 
-    public function __construct(Framework $framework) {
-        $this->framework = $framework;
-        $this->config = $this->framework->get('config');
-        $this->request = $this->framework->get('request');
-        $this->response = $this->framework->get('response');
-        $this->router = $this->framework->get('router');
-        $this->view = $this->framework->get('view');
-        $this->translation = $this->framework->get('translation');
-        $this->userSession = $this->framework->get('userSession');
+    public function __construct() {
+        $framework = Framework::instance();
+        $this->config = $framework->get('config');
+        $this->request = $framework->get('request');
+        $this->response = $framework->get('response');
+        $this->router = $framework->get('router');
+        $this->view = $framework->get('view');
+        $this->translation = $framework->get('translation');
+        $this->userSession = $framework->get('userSession');
     }
 
     public function render($path, $vars=[]) {
@@ -47,11 +44,13 @@ abstract class Controller {
     }
 
     public function error($code, $content='') {
-        $this->framework->error($code, $content);
+        $framework = Framework::instance();
+        $framework->error($code, $content);
     }
 
     public function redirect($path=null, $params=[]) {
-        $this->framework->redirect($path, $params);
+        $framework = Framework::instance();
+        $framework->redirect($path, $params);
     }
 
 }

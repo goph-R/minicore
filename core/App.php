@@ -9,9 +9,6 @@ abstract class App {
     /** @var Logger */
     protected $logger;
 
-    /** @var Framework */
-    protected $framework;
-    
     /** @var Router */
     protected $router;
     
@@ -44,8 +41,8 @@ abstract class App {
     /** @var RequestFilter[] */
     protected $requestFilters = [];
 
-    public function __construct(Framework $framework, $env='dev', $configPath='config.ini.php') {
-        $this->framework = $framework;
+    public function __construct($env='dev', $configPath='config.ini.php') {
+        $framework = Framework::instance();
         $framework->add([
             'config'        => ['Config', $env, $configPath],
             'logger'        => 'Logger',
@@ -63,8 +60,9 @@ abstract class App {
     }
 
     public function init() {
-        $this->config = $this->framework->get('config');
-        $this->logger = $this->framework->get('logger');
+        $framework = Framework::instance();
+        $this->config = $framework->get('config');
+        $this->logger = $framework->get('logger');
         try {
             $this->initInstances();
             $this->initRoutePath();
@@ -87,7 +85,8 @@ abstract class App {
     }
  
     public function addModule($moduleClass) {
-        $module = $this->framework->create($moduleClass);
+        $framework = Framework::instance();
+        $module = $framework->create($moduleClass);
         $this->modules[$module->getId()] = $module;
     }
 
@@ -96,7 +95,8 @@ abstract class App {
     }
 
     public function addRequestFilter($requestFilterClass) {
-        $requestFilter = $this->framework->create($requestFilterClass);
+        $framework = Framework::instance();
+        $requestFilter = $framework->create($requestFilterClass);
         $this->requestFilters[] = $requestFilter;
     }
    
@@ -113,15 +113,16 @@ abstract class App {
     }  
     
     protected function initInstances() {
-        $this->request = $this->framework->get('request');
-        $this->response = $this->framework->get('response');
-        $this->translation = $this->framework->get('translation');
+        $framework = Framework::instance();
+        $this->request = $framework->get('request');
+        $this->response = $framework->get('response');
+        $this->translation = $framework->get('translation');
         $this->translation->add('core', 'core/translations');
-        $this->router = $this->framework->get('router');
-        $this->routeAliases = $this->framework->get('routeAliases');
-        $this->helper = $this->framework->get('helper');
+        $this->router = $framework->get('router');
+        $this->routeAliases = $framework->get('routeAliases');
+        $this->helper = $framework->get('helper');
         $this->helper->add('core/helpers/view.php');
-        $this->view = $this->framework->get('view');
+        $this->view = $framework->get('view');
         $this->view->addFolder(':app', 'core/templates');
         $this->view->addFolder(':form', 'core/form/templates');
         $this->view->addFolder(':pager', 'core/pager/templates');
@@ -192,7 +193,8 @@ abstract class App {
         $message = $e->getMessage()."\n".$e->getTraceAsString();
         $this->logger->error($message);
         if ($this->config->getEnv() == 'dev') {
-            $this->framework->finish(str_replace("\n", "<br>", $message));
+            $framework = Framework::instance();
+            $framework->finish(str_replace("\n", "<br>", $message));
         }
     }
     
@@ -210,7 +212,8 @@ abstract class App {
         if ($route) {
             $route->call();
         } else {
-            $this->framework->error(404);
+            $framework = Framework::instance();
+            $framework->error(404);
         }
     }
 

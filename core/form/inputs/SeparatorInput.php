@@ -2,8 +2,8 @@
 
 class SeparatorInput extends Input {
     
-    public function __construct(Framework $framework, $name, $defaultValue='') {
-        parent::__construct($framework, $name, $defaultValue);
+    public function __construct($name, $defaultValue='') {
+        parent::__construct($name, $defaultValue);
         $this->required = false;
         $this->bind = false;
     }

@@ -4,7 +4,6 @@ class Request {
     
     const CONFIG_URI_PREFIX = 'request.uri_prefix';
 
-    protected $framework;
     protected $config;
     protected $data;
     protected $cookies;
@@ -13,8 +12,8 @@ class Request {
     protected $headers;
     protected $uploadedFiles = [];
 
-    public function __construct(Framework $framework) {
-        $this->framework = $framework;
+    public function __construct() {
+        $framework = Framework::instance();        
         $this->config = $framework->get('config');
         $this->data = $_REQUEST;
         $this->cookies = $_COOKIE;
@@ -29,9 +28,10 @@ class Request {
         if (empty($_FILES)) {
             return;
         }
+        $framework = Framework::instance();
         foreach ($_FILES as $name => $file) {
             if (!is_array($file['name'])) {
-                $uploadedFile = $this->framework->create(['UploadedFile', $file]);
+                $uploadedFile = $framework->create(['UploadedFile', $file]);
                 $this->uploadedFiles[$name] = $uploadedFile;
             } else {
                 $this->createUploadedFilesFromArray($name, $file);
@@ -40,9 +40,10 @@ class Request {
     }
     
     protected function createUploadedFilesFromArray($name, array $file) {
+        $framework = Framework::instance();        
         $this->uploadedFiles[$name] = [];
         foreach (array_keys($file['name']) as $index) {
-            $uploadedFile = $this->framework->create(['UploadedFile', $file, $index]);
+            $uploadedFile = $framework->create(['UploadedFile', $file, $index]);
             $this->uploadedFiles[$name][$index] = $uploadedFile;
         }
     }

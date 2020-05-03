@@ -7,8 +7,8 @@ class CheckboxGroupInput extends Input {
     private $checks;
     private $labels;
 
-    public function __construct(Framework $framework, $name, $labelsByValues=[], $checks=[]) {
-        parent::__construct($framework, $name, null);
+    public function __construct($name, $labelsByValues=[], $checks=[]) {        
+        parent::__construct($name, null);
         $this->labels = $labelsByValues;
         $this->trimValue = false;
         $this->required = false;

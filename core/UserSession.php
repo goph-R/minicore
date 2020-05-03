@@ -12,8 +12,9 @@ class UserSession {
 
     private $permissions;
 
-    public function __construct(Framework $framework) {
+    public function __construct() {
         session_start();
+        $framework = Framework::instance();
         $this->request = $framework->get('request');
         $this->config = $framework->get('config');
     }

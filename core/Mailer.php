@@ -41,7 +41,8 @@ class Mailer {
     private $addresses = [];
     private $vars = [];
 
-    public function __construct(Framework $framework) {
+    public function __construct() {
+        $framework = Framework::instance();
         $this->config = $framework->get('config');
         $this->view = $framework->get('view');
         $this->logger = $framework->get('logger');

@@ -27,8 +27,8 @@ class PasswordValidator extends Validator {
 
     private $options;
     
-    public function __construct(Framework $framework, $options=[]) {
-        parent::__construct($framework);
+    public function __construct($options=[]) {
+        parent::__construct();
         $this->message = $this->translation->get('core', 'password_not_valid');        
         $this->options = self::DEFAULT_OPTIONS + $options;
         $regex = '';

@@ -8,7 +8,8 @@ abstract class Validator {
     /** @var Translation */
     protected $translation;
 
-    public function __construct(Framework $framework) {
+    public function __construct() {
+        $framework = Framework::instance();
         $this->translation = $framework->get('translation');
     }
 

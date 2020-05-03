@@ -5,8 +5,9 @@ class CheckboxInput extends Input {
     private $checked;
     private $text;
 
-    public function __construct(Framework $framework, $name, $defaultValue='', $label='', $checked=false) {
-        parent::__construct($framework, $name, $defaultValue);
+    public function __construct($name, $defaultValue='', $label='', $checked=false) {
+        parent::__construct($name, $defaultValue);
+        $framework = Framework::instance();
         $this->checked = $checked;
         if (is_array($label) && count($label) == 2) {
             $t = $framework->get('translation');

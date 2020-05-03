@@ -12,9 +12,6 @@ class View {
     private $useLayout = true;
     private $pathChanges = [];
 
-    public function __construct(Framework $framework) {
-    }
-
     public function setUseLayout($value) {
         $this->useLayout = $value;
     }

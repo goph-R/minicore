@@ -17,7 +17,8 @@ class Logger {
     protected $path;
     protected $dateFormat;
 
-    public function __construct(Framework $framework) {
+    public function __construct() {
+        $framework = Framework::instance();
         $config = $framework->get('config');
         $this->level = @self::$levelMap[$config->get('logger.level')];
         $this->path = $config->get('logger.path');

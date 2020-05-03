@@ -2,8 +2,8 @@
 
 class EmailValidator extends Validator {
 
-    public function __construct(Framework $framework) {
-        parent::__construct($framework);
+    public function __construct() {
+        parent::__construct();
         $this->message = $this->translation->get('core', 'not_valid_email');
     }
 

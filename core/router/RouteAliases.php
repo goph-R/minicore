@@ -2,9 +2,6 @@
 
 class RouteAliases {
 
-    public function __construct(Framework $framework) {
-    }
-
     public function hasAlias($alias) {
         return false;
     }

@@ -2,9 +2,6 @@
 
 class Form {
 
-    /** @var Framework */
-    protected $framework;
-
     /** @var View */
     protected $view;
 
@@ -31,8 +28,8 @@ class Form {
     protected $name = '';
     protected $useCsrf = true;
 
-    public function __construct(Framework $framework, $name='form') {
-        $this->framework = $framework;
+    public function __construct($name='form') {
+        $framework = Framework::instance();
         $this->request = $framework->get('request');
         $this->view = $framework->get('view');
         $this->translation = $framework->get('translation');
@@ -56,7 +53,8 @@ class Form {
     }
 
     public function addInput($label, $input, $description='') {
-        $i = $this->framework->create($input);
+        $framework = Framework::instance();
+        $i = $framework->create($input);
         $name = $i->getName();
         if (!in_array($name, $this->order)) {
             $this->order[] = $name;
@@ -123,8 +121,9 @@ class Form {
     }
 
     public function addValidator($inputName, $validator) {
-        $v = $this->framework->create($validator);
         $this->checkInputExistance($inputName);
+        $framework = Framework::instance();
+        $v = $framework->create($validator);
         if (!isset($this->validators[$inputName])) {
             $this->validators[$inputName] = [];
         }
@@ -132,7 +131,8 @@ class Form {
     }
 
     public function addPostValidator($validator) {
-        $this->postValidators[] = $this->framework->create($validator);
+        $framework = Framework::instance();
+        $this->postValidators[] = $framework->create($validator);
     }
 
     public function getValue($inputName) {

@@ -1,12 +1,12 @@
 <?php
 
 function static_url($path) {
-    $app = $GLOBALS['framework']->get('app');
+    $app = Framework::instance()->get('app');
     return $app->getStaticUrl($path);
 }
 
 function route_url($path=null, $params=[], $amp='&amp;') {
-    $router = $GLOBALS['framework']->get('router');
+    $router = Framework::instance()->get('router');
     return $router->getUrl($path, $params, $amp);
 }
 
@@ -19,17 +19,17 @@ function script($src) {
 }
 
 function use_css($src, $media='all') {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     $view->addStyle($src, $media);
 }
 
 function use_script($src) {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     $view->addScript($src);
 }
 
 function fetch_scripts() {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     $result = '';
     foreach ($view->getScripts() as $script) {
         $result .= script($script);
@@ -41,7 +41,7 @@ function fetch_scripts() {
 }
 
 function fetch_styles() {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     $result = '';
     foreach ($view->getStyles() as $style) {
         $result .= css($style['path'], $style['media']);
@@ -50,32 +50,32 @@ function fetch_styles() {
 }
 
 function fetch_content($contentPath, $vars=[]) {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     return $view->fetch($contentPath, $vars);
 }
 
 function use_layout($path) {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     $view->useLayout($path);
 }
 
 function start_block($name) {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     $view->startBlock($name);
 }
 
 function append_block($name) {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     $view->appendBlock($name);
 }
 
 function end_block() {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     $view->endBlock();
 }
 
 function fetch_block($name) {
-    $view = $GLOBALS['framework']->get('view');
+    $view = Framework::instance()->get('view');
     return $view->fetchBlock($name);
 }
 
@@ -84,17 +84,17 @@ function esc($value) {
 }
 
 function use_translation($namespace) {
-    $translation = $GLOBALS['framework']->get('translation');
+    $translation = Framework::instance()->get('translation');
     $translation->setNamespace($namespace);
 }
 
 function t($name, $params=[]) {
-    $translation = $GLOBALS['framework']->get('translation');
+    $translation = Framework::instance()->get('translation');
     return $translation->get($translation->getNamespace(), $name, $params);
 }
 
 function text($namespace, $name, $params=[]) {
-    $translation = $GLOBALS['framework']->get('translation');
+    $translation = Framework::instance()->get('translation');
     return $translation->get($namespace, $name, $params);
 }
 

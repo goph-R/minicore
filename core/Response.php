@@ -8,7 +8,8 @@ class Response {
     /** @var Request */
     private $request;
 
-    public function __construct(Framework $framework) {
+    public function __construct() {
+        $framework = Framework::instance();
         $this->request = $framework->get('request');
     }
 

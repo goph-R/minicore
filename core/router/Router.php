@@ -16,13 +16,10 @@ class Router {
     /** @var Translation */
     private $translation;
 
-    /** @var Framework */
-    private $framework;
-
     private $routes = [];
 
-    public function __construct(Framework $framework) {
-        $this->framework = $framework;
+    public function __construct() {
+        $framework = Framework::instance();
         $this->config = $framework->get('config');
         $this->aliases = $framework->get('routeAliases');
         $this->translation = $framework->get('translation');
@@ -68,7 +65,8 @@ class Router {
     }
     
     public function getCurrentUrlWithLocale($locale, $amp='&amp;') {
-        $request = $this->framework->get('request');
+        $framework = Framework::instance();
+        $request = $framework->get('request');
         $params = $request->getAll();
         $routeParam = $this->getParameter();
         $path = '';
@@ -117,7 +115,8 @@ class Router {
     }
 
     private function addRoute($path, $controllerClass, $controllerMethod, $httpMethods) {
-        $result = $this->framework->create('Route', [$path, $controllerClass, $controllerMethod, $httpMethods]);
+        $framework = Framework::instance();
+        $result = $framework->create('Route', [$path, $controllerClass, $controllerMethod, $httpMethods]);
         $this->routes[$path] = $result;
         return $result;
     }

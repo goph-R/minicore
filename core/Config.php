@@ -5,7 +5,7 @@ class Config {
     private $env;
     private $data = [];
 
-    public function __construct(Framework $framework, $env, $path) {
+    public function __construct($env, $path) {
         $this->env = $env;
         $this->load($path);
     }

@@ -8,7 +8,7 @@ class UploadedFile {
     private $size;
     private $type;
     
-    public function __construct(Framework $framework, array $data, $index=-1) {
+    public function __construct(array $data, $index=-1) {
         if ($index == -1) {
             $this->name = $data['name'];
             $this->tempPath = $data['tmp_name'];

@@ -2,9 +2,6 @@
 
 class Route {
 
-    /** @var Framework */
-    private $framework;
-
     private $path;
     private $httpMethods;
     private $partCount;
@@ -13,8 +10,7 @@ class Route {
     private $controllerMethod;
     private $parameters;
 
-    public function __construct(Framework $framework, $path, $controllerClass, $controllerMethod, $httpMethods) {
-        $this->framework = $framework;
+    public function __construct($path, $controllerClass, $controllerMethod, $httpMethods) {
         $this->path = $path;
         $this->controllerClass = $controllerClass;
         $this->controllerMethod = $controllerMethod;
@@ -43,7 +39,8 @@ class Route {
     }
 
     public function call() {
-        $controller = $this->framework->get($this->controllerClass);
+        $framework = Framework::instance();
+        $controller = $framework->get($this->controllerClass);
         if (!method_exists($controller, $this->controllerMethod)) {
             throw new RuntimeException('The method '.get_class($controller).'::'.$this->controllerMethod." doesn't exist.");
         }

@@ -21,7 +21,8 @@ class Pager {
     protected $hideLeft;
     protected $hideRight;
     
-    public function __construct(Framework $framework) {
+    public function __construct() {
+        $framework = Framework::instance();
         $this->router = $framework->get('router');
         $this->view = $framework->get('view');
     }

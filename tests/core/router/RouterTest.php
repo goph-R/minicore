@@ -31,7 +31,8 @@ final class RouterTest extends TestCase {
             ['translation', [], $this->translationMock],
             ['routeAliases', [], $this->routeAliasesMock],
         ]));
-        $this->router = new Router($this->frameworkMock);
+        Framework::setInstance($this->frameworkMock);
+        $this->router = new Router();
     }
     
     private function setUpConfigWithoutRewrite() {

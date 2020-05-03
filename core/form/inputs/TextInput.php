@@ -6,10 +6,6 @@ class TextInput extends Input {
     protected $placeholder = '';
     protected $autocomplete = true;
 
-    public function __construct(Framework $framework, $name, $defaultValue = '') {
-        parent::__construct($framework, $name, $defaultValue);
-    }
-    
     public function setPlaceholder($placeholder) {
         $this->setAttribute('placeholder', $placeholder);
     }

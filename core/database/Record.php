@@ -5,9 +5,6 @@ abstract class Record {
     /** @var Database */
     protected $db;
 
-    /** @var Framework */
-    protected $framework;
-    
     /** @var Translation */
     protected $translation;
 
@@ -24,7 +21,6 @@ abstract class Record {
 
     private static $protectedNames = [
         'db',
-        'framework',
         'translation',
         'dbInstanceName',
         'tableName',
@@ -39,8 +35,8 @@ abstract class Record {
         'protectedNames'
     ];
 
-    public function __construct(Framework $framework, $dbInstanceName=null) {
-        $this->framework = $framework;
+    public function __construct($dbInstanceName=null) {
+        $framework = Framework::instance();
         $this->translation = $framework->get('translation');
         $this->db = $framework->get($dbInstanceName == null ? $this->dbInstanceName : $dbInstanceName);
     }

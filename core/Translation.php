@@ -19,7 +19,8 @@ class Translation {
     private $namespace = '';
     private $locale;
 
-    public function __construct(Framework $framework) {
+    public function __construct() {
+        $framework = Framework::instance();
         $this->request = $framework->get('request');
         $config = $framework->get('config');
         $this->locale = $config->get('translation.default');

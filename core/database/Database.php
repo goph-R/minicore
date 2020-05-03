@@ -4,9 +4,6 @@ class Database {
 
     private $name;
 
-    /** @var Framework */
-    private $framework;
-
     /** @var PDO */
     private $pdo = null;
 
@@ -18,8 +15,8 @@ class Database {
     private $className;
     private $objectParams;
 
-    public function __construct(Framework $framework, $name) {
-        $this->framework = $framework;
+    public function __construct($name) {
+        $framework = Framework::instance();
         $this->name = $name;
         $this->logger = $framework->get('logger');
     }
@@ -28,7 +25,8 @@ class Database {
         if ($this->connected) {
             return;
         }
-        $config = $this->framework->get('config');
+        $framework = Framework::instance();
+        $config = $framework->get('config');
         $dsn = $config->get('database.'.$this->name.'.dsn');
         $user = $config->get('database.'.$this->name.'.user');
         $password = $config->get('database.'.$this->name.'.password');
@@ -98,7 +96,6 @@ class Database {
             $this->className = array_shift($classData);
             $this->objectParams = $classData;
         }
-        array_unshift($this->objectParams, $this->framework);
     }
 
     public function lastInsertId($name=null) {

@@ -10,8 +10,9 @@ class CsrfValidator extends Validator {
     private $form;
     private $inputName;
 
-    public function __construct(Framework $framework, $userSessionName, Form $form, $inputName) {
-        parent::__construct($framework);
+    public function __construct($userSessionName, Form $form, $inputName) {
+        parent::__construct();
+        $framework = Framework::instance();
         $this->message = $this->translation->get('core', 'not_valid_csrf');
         $this->userSession = $framework->get('userSession');
         $this->userSessionName = $userSessionName;

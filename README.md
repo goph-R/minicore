@@ -43,9 +43,9 @@ Framework::dispatch(
 
 class MyApp extends App {
 
-    public function __construct(Framework $framework, $env='dev', $configPath='config.ini.php') {
-        parent::__construct($framework, $env, $configPath);
-        $this->framework->add([
+    public function __construct($env='dev', $configPath='config.ini.php') {
+        parent::__construct($env, $configPath);
+        Framework::instance()->add([
             'helloController' => 'HelloController',
         ]);
     }

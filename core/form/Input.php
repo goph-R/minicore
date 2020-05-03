@@ -37,7 +37,8 @@ abstract class Input {
     
     abstract public function fetch();
 
-    public function __construct(Framework $framework, $name, $defaultValue = '') {
+    public function __construct($name, $defaultValue = '') {
+        $framework = Framework::instance();
         $this->config = $framework->get('config');
         $this->view = $framework->get('view');
         $this->request = $framework->get('request');

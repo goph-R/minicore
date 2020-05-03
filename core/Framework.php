@@ -4,13 +4,27 @@ class Framework {
 
     /** @var Instance[] */
     private $instances = [];
+    
+    /** @var Framework */
+    private static $instance;
 
     private $files = [];
     private $classChanges = [];
 
     public static function dispatch($appClass, $rootPaths=['core', 'app', 'modules'], $useCache=true) {
-        $framework = new Framework();
-        $framework->run($appClass, $rootPaths, $useCache);
+        self::setInstance(new Framework());
+        self::$instance->run($appClass, $rootPaths, $useCache);
+    }
+    
+    public static function setInstance($instance) {
+        self::$instance = $instance;
+    }
+    
+    /**
+     * @return Framework
+     */
+    public static function instance() {
+        return self::$instance;
     }
 
     public function run($appClass, $rootPaths=['core', 'app', 'modules'], $useCache=true) {
@@ -130,7 +144,7 @@ class Framework {
         if (isset($this->classChanges[$class])) {
             $class = $this->classChanges[$class];
         }
-        $instance = new Instance($this, $class, $args);
+        $instance = new Instance($class, $args);
         return $instance->create();
     }
     
@@ -147,7 +161,7 @@ class Framework {
     }
 
     private function addInstance($name, $class, $args=[]) {
-        $this->instances[$name] = new Instance($this, $class, $args);
+        $this->instances[$name] = new Instance($class, $args);
     }
 
 }
