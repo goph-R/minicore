@@ -5,12 +5,13 @@ A simple MVC PHP framework. It uses the PHP PDO for database interactions via th
 This framework is in WIP (Work In Progress) state.
 
 ## Hello application
-1) Create the following directory structure in the downloaded directory, for "cache" and "logs" the application has to have write rights:
+1) Create the following directory structure for "cache" and "logs" the application has to have write rights:
 ```
 ~/app
+    /cache
+    /logs
     /templates     
-~/cache
-~/logs
+~/minicore
 ```
 2) Create the index.dev.php: 
 ```php
@@ -30,13 +31,13 @@ Framework::dispatch(
     ],
     
     [ // the directories where the framework will search for the classes recursively
-        'core',
+        'minicore/core',
         'app'
     ] 
 );
 ```
-3) Copy the *config.ini.example.php* to *config.ini.php* and set the configuration for your environment. The [all] section contains the default values, you can override those in the [dev] section for the dev environment.
-4) Copy the *~/core/templates/layout.phtml* to your *~/app/templates/layout.phtml*.
+3) Copy the *~/minicore/config.ini.example.php* to *~/config.ini.php* and set the configuration for your environment. The [all] section contains the default values, you can override those in the [dev] section for the dev environment.
+4) Copy the *~/minicore/core/templates/layout.phtml* to your *~/app/templates/layout.phtml*.
 5) Create *MyApp.php* in the *~/app* directory:
 ```php
 <?php
@@ -82,20 +83,20 @@ Hello <?= esc($name) ?>!
 You should have the following structure at this point:
 ```
 ~/app
+    /cache (empty)
+    /logs (empty)   
     /templates       
         layout.phtml
         hello.phtml
     MyApp.php
     HelloController.php
-~/cache (empty)
-~/core (the minicore files)
-~/logs (empty)
-config.ini.php
-index.dev.php
+~/minicore (the minicore files)
+~/config.ini.php
+~/index.dev.php
 ```
 Now you can run your Hello application:
 ```
-http://localhost/your_folder_for_the_minicore/index.dev.php?route=hello/World
+http://localhost/your_folder/index.dev.php?route=hello/World
 ```
 ## Available modules
 
