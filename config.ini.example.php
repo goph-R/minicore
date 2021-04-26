@@ -35,7 +35,7 @@ mailer.smtp_auth = true
 
 [dev]
 error.static_folder = "c:/xampp/htdocs/yourdomain/minicore/core/static/"
-app.path = "c:/xampp/htdocs/yourdomain.com/"
+app.path = "c:/xampp/htdocs/yourdomain/"
 app.core_folder = "c:/xampp/htdocs/yourdomain/minicore/core/"
 app.modules_folder = "c:/xampp/htdocs/yourdomain/modules/"
 app.modules_url = "yourdomain/modules/"
