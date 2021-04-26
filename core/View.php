@@ -115,28 +115,30 @@ class View {
         return htmlspecialchars($value);
     }
 
-    public function fetch($__path, $__vars=[]) {
-        ob_start();
-        extract($this->vars);
-        extract($__vars);
-        $__realPath = $this->getRealPath($__path, 'phtml');
-        include $__realPath;
-        $__content = ob_get_clean();
-        return $__content;
+    public function fetch($path, $vars=[]) {
+        $content = $this->tryToInclude($path, $vars);
+        return $content;
     }
 
-    public function fetchWithLayout($__path, $__vars=[]) {
+    public function fetchWithLayout($path, $vars=[]) {
+        $content = $this->tryToInclude($path, $vars);
+        if ($this->useLayout && $this->layout) {
+            $path = array_pop($this->layout);
+            $content .= $this->fetchWithLayout($path, $vars, $content);
+        }
+        return $content;
+    }
+
+    private function tryToInclude($__path, $__vars=[]) {
+        $__realPath = $this->getRealPath($__path, 'phtml');
+        if (!file_exists($__realPath)) {
+            throw new RuntimeException("The file doesn't exist: ".$__realPath);
+        }
         ob_start();
         extract($this->vars);
         extract($__vars);
-        $__realPath = $this->getRealPath($__path, 'phtml');
         include $__realPath;
-        $__content = ob_get_clean();
-        if ($this->useLayout && $this->layout) {
-            $path = array_pop($this->layout);
-            $__content .= $this->fetchWithLayout($path, $__vars, $__content);
-        }
-        return $__content;
+        return ob_get_clean();
     }
 
 }

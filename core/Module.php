@@ -8,6 +8,10 @@ abstract class Module {
         return $this->id;
     }
 
+    public function getFolder() {
+        return Framework::instance()->get('app')->getModulesFolder().$this->id."/";
+    }
+
     public function init() {}
 
 }

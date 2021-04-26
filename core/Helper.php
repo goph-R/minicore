@@ -2,8 +2,24 @@
 
 class Helper {
 
-    public function add($path) {
-        require_once $path;
+    private $baseDir;
+
+    public function Helper() {
+        $framework = Framework::instance();
+        $app = $framework->get('app');
+        $this->baseDir = $app->getPath();
+    }
+
+    public function add($path, $relativePath="") {
+        if (!$relativePath) {
+            $p = $this->baseDir.$path;
+        } else {
+            $p = dirname($relativePath)."/".$path;
+        }
+        if (!file_exists($p)) {
+            throw new RuntimeException("File not found for include: ".$p);
+        }
+        include_once $p;
     }
 
 }

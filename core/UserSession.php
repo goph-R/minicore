@@ -3,7 +3,9 @@
 class UserSession {
 
     const SESSION_ID = 'id';
-    
+
+    const CONFIG_SALT = 'session.salt';
+
     /** @var Request */
     private $request;
 
@@ -37,8 +39,27 @@ class UserSession {
         $this->set(self::SESSION_ID, $value);
     }
 
+    public function guid() {
+        // based on: https://www.uuidgenerator.net/dev-corner/php
+        // Generate 16 bytes (128 bits) of random data
+        $data = random_bytes(16);
+
+        // Set version to 0100
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+        // Set bits 6-7 to 10
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+
+        // Output the 36 character UUID.
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
+
     public function getHash() {
-        return md5($this->request->getHeader('User-Agent').$this->request->getIp());
+        if (!$this->config->get(self::CONFIG_SALT)) {
+            throw new RuntimeException("'".self::CONFIG_SALT."' has no value in configuration.");
+        }
+        $salt = $this->config->get(self::CONFIG_SALT);
+        return md5($salt.$this->guid().$this->request->getIp());
     }
 
     public function setLoggedIn($in) {

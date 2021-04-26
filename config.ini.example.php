@@ -2,9 +2,13 @@
 /*
 
 [all]
-app.static_url = "app/static/"
-app.media_url = "app/media/"
+app.path = "/var/www/yourdomain.com/";
+app.core_folder = "/var/www/yourdomain.com/minicore/core/"
+app.modules_folder = "/var/www/yourdomain.com/modules/"
 app.media_folder = "/var/www/yourdomain.com/app/media/"
+app.media_url = "app/media/"
+app.static_url = "app/static/"
+session.salt = "Please use a proper salt here!"
 router.base_url = "https://yourdomain.com/"
 router.index = "index.php"
 router.parameter = "route"
@@ -29,6 +33,9 @@ mailer.debug_level = 0
 mailer.smtp_auth = true
 
 [dev]
+app.path = "c:/xampp/htdocs/yourdomain.com/";
+app.core_folder = "c:/xampp/htdocs/yourdomain/minicore/core/"
+app.modules_folder = "c:/xampp/htdocs/yourdomain/modules/"
 app.media_folder = "c:/xampp/htdocs/yourdomain/app/media/"
 router.base_url = "http://localhost/yourdomain/"
 router.index = "index.dev.php"

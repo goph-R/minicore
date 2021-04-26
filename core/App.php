@@ -5,6 +5,9 @@ abstract class App {
     const CONFIG_STATIC_URL = 'app.static_url';
     const CONFIG_MEDIA_URL = 'app.media_url';
     const CONFIG_MEDIA_FOLDER = 'app.media_folder';
+    const CONFIG_PATH = 'app.path';
+    const CONFIG_MODULES_FOLDER = 'app.modules_folder';
+    const CONFIG_CORE_FOLDER = 'app.core_folder';
 
     /** @var Logger */
     protected $logger;
@@ -72,7 +75,7 @@ abstract class App {
             $this->handleException($e);
         }
     }
-    
+
     public function run() {
         try {
             if (!$this->runRequestFilters()) {
@@ -94,12 +97,24 @@ abstract class App {
         return isset($this->modules[$moduleId]);
     }
 
+    public function getModulesFolder() {
+        return $this->config->get(self::CONFIG_MODULES_FOLDER);
+    }
+
+    public function getCoreFolder() {
+        return $this->config->get(self::CONFIG_CORE_FOLDER);
+    }
+
     public function addRequestFilter($requestFilterClass) {
         $framework = Framework::instance();
         $requestFilter = $framework->create($requestFilterClass);
         $this->requestFilters[] = $requestFilter;
     }
-   
+
+    public function getPath() {
+        return $this->config->get(SELF::CONFIG_PATH);
+    }
+
     public function getStaticUrl($path) {
         return $this->getFullUrl(self::CONFIG_STATIC_URL, $path);
     }
@@ -114,18 +129,19 @@ abstract class App {
     
     protected function initInstances() {
         $framework = Framework::instance();
+        $coreFolder = $this->getCoreFolder();
         $this->request = $framework->get('request');
         $this->response = $framework->get('response');
         $this->translation = $framework->get('translation');
-        $this->translation->add('core', 'core/translations');
+        $this->translation->add('core', $coreFolder.'translations');
         $this->router = $framework->get('router');
         $this->routeAliases = $framework->get('routeAliases');
         $this->helper = $framework->get('helper');
-        $this->helper->add('core/helpers/view.php');
+        $this->helper->add('helpers/view.php', __FILE__);
         $this->view = $framework->get('view');
-        $this->view->addFolder(':app', 'core/templates');
-        $this->view->addFolder(':form', 'core/form/templates');
-        $this->view->addFolder(':pager', 'core/pager/templates');
+        $this->view->addFolder(':app', $coreFolder.'templates');
+        $this->view->addFolder(':form', $coreFolder.'form/templates');
+        $this->view->addFolder(':pager', $coreFolder.'pager/templates');
     }
 
     protected function initRoutePath() {

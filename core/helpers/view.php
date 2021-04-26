@@ -107,7 +107,6 @@ function date_view($dateStr) {
 }
 
 function date_diff_view($dateStr) {
-    $result = '';
     $now = new DateTime('now');
     $date = new DateTime($dateStr);
     $interval = date_diff($now, $date);
