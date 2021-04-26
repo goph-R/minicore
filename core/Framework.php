@@ -10,10 +10,17 @@ class Framework {
 
     private $files = [];
     private $classChanges = [];
+    private $cacheFolder = "";
 
-    public static function dispatch($appClass, $rootPaths=['core', 'app', 'modules'], $useCache=true) {
+    public static function dispatch($appClass, $rootPaths=['core', 'app', 'modules'], $cacheFolder=true) {
         self::setInstance(new Framework());
-        self::$instance->run($appClass, $rootPaths, $useCache);
+        $that = self::instance();
+        if ($cacheFolder === true) {
+            $that->cacheFolder = getcwd().'/app/cache/';
+        } else {
+            $that->cacheFolder = $cacheFolder;
+        }
+        $that->run($appClass, $rootPaths);
     }
     
     public static function setInstance($instance) {
@@ -27,9 +34,9 @@ class Framework {
         return self::$instance;
     }
 
-    public function run($appClass, $rootPaths=['core', 'app', 'modules'], $useCache=true) {
+    public function run($appClass, $rootPaths=['core', 'app', 'modules']) {
         set_error_handler([$this, 'handleError']);
-        $this->initClasses($rootPaths, $useCache);
+        $this->initClasses($rootPaths);
         $this->add(['app' => $appClass]);
         /** @var App $app */
         $app = $this->get('app');
@@ -38,7 +45,7 @@ class Framework {
     }
     
     protected function getFilesCachePath() {
-        return getcwd().'/cache/files.cache';
+        return $this->cacheFolder.'files.cache';
     }
     
     protected function loadFilesFromCache() {
@@ -54,9 +61,9 @@ class Framework {
         file_put_contents($this->getFilesCachePath(), serialize($this->files));
     }
 
-    public function initClasses($rootPaths, $useCache) {
+    public function initClasses($rootPaths) {
         spl_autoload_register([$this, 'loadClass']);
-        if ($useCache && $this->loadFilesFromCache()) {
+        if ($this->cacheFolder && $this->loadFilesFromCache()) {
             return;
         }
         foreach ($rootPaths as $rootPath) {
@@ -68,7 +75,7 @@ class Framework {
                 }
             }
         }
-        if ($useCache) {
+        if ($this->cacheFolder) {
             $this->saveFilesToCache();
         }
     }

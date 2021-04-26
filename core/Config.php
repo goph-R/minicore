@@ -11,11 +11,31 @@ class Config {
     }
 
     public function load($path) {
+
+        // parse ini
         if (!file_exists($path)) {
             throw new RuntimeException("Couldn't load config: $path");
         }
         $iniData = parse_ini_file($path, true);
-        $this->data = array_merge($this->data, $iniData);
+
+        // include config
+        if (isset($iniData['include'])) {
+            foreach ($iniData['include'] as $name => $path) {
+                $this->load($path);
+            }
+            unset($iniData['include']);
+        }
+
+        // copy the data
+        foreach ($iniData as $env => $data) {
+            if (!isset($this->data[$env])) {
+                $this->data[$env] = [];
+            }
+            foreach ($iniData[$env] as $name => $value) {
+                $this->data[$env][$name] = $value;
+            }
+        }
+
     }
 
     public function get($name, $defaultValue=null) {

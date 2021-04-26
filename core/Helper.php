@@ -4,7 +4,7 @@ class Helper {
 
     private $baseDir;
 
-    public function Helper() {
+    public function __construct() {
         $framework = Framework::instance();
         $app = $framework->get('app');
         $this->baseDir = $app->getPath();

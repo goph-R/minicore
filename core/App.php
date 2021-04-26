@@ -1,13 +1,15 @@
 <?php
 
 abstract class App {
-    
+
+    const CONFIG_PATH = 'app.path';
+    const CONFIG_CORE_FOLDER = 'app.core_folder';
+    const CONFIG_CACHE_FOLDER = 'app.cache_folder';
     const CONFIG_STATIC_URL = 'app.static_url';
     const CONFIG_MEDIA_URL = 'app.media_url';
     const CONFIG_MEDIA_FOLDER = 'app.media_folder';
-    const CONFIG_PATH = 'app.path';
     const CONFIG_MODULES_FOLDER = 'app.modules_folder';
-    const CONFIG_CORE_FOLDER = 'app.core_folder';
+    const CONFIG_MODULES_URL = 'app.modules_url';
 
     /** @var Logger */
     protected $logger;
@@ -39,14 +41,17 @@ abstract class App {
     /** @var Module[] */
     protected $modules = [];
 
+    /** @var Framework */
+    protected $framework;
+
     protected $routePath;
 
     /** @var RequestFilter[] */
     protected $requestFilters = [];
 
     public function __construct($env='dev', $configPath='config.ini.php') {
-        $framework = Framework::instance();
-        $framework->add([
+        $this->framework = Framework::instance();
+        $this->framework->add([
             'config'        => ['Config', $env, $configPath],
             'logger'        => 'Logger',
             'database'      => ['Database', 'default'],
@@ -63,9 +68,8 @@ abstract class App {
     }
 
     public function init() {
-        $framework = Framework::instance();
-        $this->config = $framework->get('config');
-        $this->logger = $framework->get('logger');
+        $this->config = $this->framework->get('config');
+        $this->logger = $this->framework->get('logger');
         try {
             $this->initInstances();
             $this->initRoutePath();
@@ -88,8 +92,7 @@ abstract class App {
     }
  
     public function addModule($moduleClass) {
-        $framework = Framework::instance();
-        $module = $framework->create($moduleClass);
+        $module = $this->framework->create($moduleClass);
         $this->modules[$module->getId()] = $module;
     }
 
@@ -97,17 +100,31 @@ abstract class App {
         return isset($this->modules[$moduleId]);
     }
 
+    public function getModule($moduleId) {
+        if (!$this->hasModule($moduleId)) {
+            throw new RuntimeException("Can't get module: ".$moduleId);
+        }
+        return $this->modules[$moduleId];
+    }
+
     public function getModulesFolder() {
         return $this->config->get(self::CONFIG_MODULES_FOLDER);
+    }
+
+    public function getModulesUrl() {
+        return $this->config->get(self::CONFIG_MODULES_URL);
     }
 
     public function getCoreFolder() {
         return $this->config->get(self::CONFIG_CORE_FOLDER);
     }
 
+    public function getCacheFolder() {
+        return $this->config->get(self::CONFIG_CACHE_FOLDER);
+    }
+
     public function addRequestFilter($requestFilterClass) {
-        $framework = Framework::instance();
-        $requestFilter = $framework->create($requestFilterClass);
+        $requestFilter = $this->framework->create($requestFilterClass);
         $this->requestFilters[] = $requestFilter;
     }
 
@@ -128,17 +145,16 @@ abstract class App {
     }  
     
     protected function initInstances() {
-        $framework = Framework::instance();
         $coreFolder = $this->getCoreFolder();
-        $this->request = $framework->get('request');
-        $this->response = $framework->get('response');
-        $this->translation = $framework->get('translation');
+        $this->request = $this->framework->get('request');
+        $this->response = $this->framework->get('response');
+        $this->translation = $this->framework->get('translation');
         $this->translation->add('core', $coreFolder.'translations');
-        $this->router = $framework->get('router');
-        $this->routeAliases = $framework->get('routeAliases');
-        $this->helper = $framework->get('helper');
+        $this->router = $this->framework->get('router');
+        $this->routeAliases = $this->framework->get('routeAliases');
+        $this->helper = $this->framework->get('helper');
         $this->helper->add('helpers/view.php', __FILE__);
-        $this->view = $framework->get('view');
+        $this->view = $this->framework->get('view');
         $this->view->addFolder(':app', $coreFolder.'templates');
         $this->view->addFolder(':form', $coreFolder.'form/templates');
         $this->view->addFolder(':pager', $coreFolder.'pager/templates');
@@ -209,8 +225,7 @@ abstract class App {
         $message = $e->getMessage()."\n".$e->getTraceAsString();
         $this->logger->error($message);
         if ($this->config->getEnv() == 'dev') {
-            $framework = Framework::instance();
-            $framework->finish(str_replace("\n", "<br>", $message));
+            $this->framework->finish(str_replace("\n", "<br>", $message));
         }
     }
     
@@ -228,8 +243,7 @@ abstract class App {
         if ($route) {
             $route->call();
         } else {
-            $framework = Framework::instance();
-            $framework->error(404);
+            $this->framework->error(404);
         }
     }
 
