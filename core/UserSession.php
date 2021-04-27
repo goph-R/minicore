@@ -59,7 +59,8 @@ class UserSession {
             throw new RuntimeException("'".self::CONFIG_SALT."' has no value in configuration.");
         }
         $salt = $this->config->get(self::CONFIG_SALT);
-        return md5($salt.$this->guid().$this->request->getIp());
+        $result = md5($salt.$this->request->getIp());
+        return $result;
     }
 
     public function setLoggedIn($in) {

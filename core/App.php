@@ -140,7 +140,7 @@ abstract class App {
         return $this->config->get(self::CONFIG_MEDIA_FOLDER).$path;
     }
 
-    public function getMediaUrl($path) {
+    public function getMediaUrl($path='') {
         return $this->getFullUrl(self::CONFIG_MEDIA_URL, $path);
     }  
     
