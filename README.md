@@ -8,12 +8,10 @@ This framework is in WIP (Work In Progress) state.
 1) Create the following directory structure for "cache" and "logs" the application has to have write rights:
 ```
 ~/app
-    /cache
-    /logs
     /templates     
 ~/minicore
 ```
-2) Create the index.dev.php: 
+2) Create the index.dev.php in the document root: 
 ```php
 <?php
 
@@ -83,8 +81,6 @@ Hello <?= esc($name) ?>!
 You should have the following structure at this point:
 ```
 ~/app
-    /cache (empty)
-    /logs (empty)   
     /templates       
         layout.phtml
         hello.phtml
