@@ -5,7 +5,7 @@ A simple MVC PHP framework. It uses the PHP PDO for database interactions via th
 This framework is in WIP (Work In Progress) state.
 
 ## Hello application
-1) Create the following directory structure for "cache" and "logs" the application has to have write rights:
+1) Create the following directory structure:
 ```
 ~/app
     /templates     
