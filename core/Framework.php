@@ -58,6 +58,10 @@ class Framework {
     }
     
     public function saveFilesToCache() {
+        $dirPath = dirname($this->getFilesCachePath());
+        if (!file_exists($dirPath)) {
+            mkdir($dirPath, 0777, true);
+        }
         file_put_contents($this->getFilesCachePath(), serialize($this->files));
     }
 

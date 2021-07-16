@@ -168,7 +168,7 @@ abstract class Input {
 
     public function getClassHtml() {
         $classes = $this->getClasses();
-        return $classes ? ' class="'.join($classes, ' ').'"' : '';
+        return $classes ? ' class="'.join(' ', $classes).'"' : '';
     }
 
     public function hasError() {
