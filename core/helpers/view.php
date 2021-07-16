@@ -11,16 +11,16 @@ function route_url($path=null, $params=[], $amp='&amp;') {
 }
 
 function css($src, $media='all') {
-    return '<link rel="stylesheet" type="text/css" href="'.static_url($src).'" media="'.$media.'">'."\n";
+    return '<link rel="stylesheet" type="text/css" href="'.$src.'" media="'.$media.'">'."\n";
 }
 
 function script($src) {
-    return '<script src="'.static_url($src).'" type="text/javascript"></script>'."\n";
+    return '<script src="'.$src.'" type="text/javascript"></script>'."\n";
 }
 
 function use_css($src, $media='all') {
     $view = Framework::instance()->get('view');
-    $view->addStyle($src, $media);
+    $view->addStyle(static_url($src), $media);
 }
 
 function use_module_css($moduleId, $src, $media='all') {
@@ -33,7 +33,7 @@ function use_module_css($moduleId, $src, $media='all') {
 
 function use_script($src) {
     $view = Framework::instance()->get('view');
-    $view->addScript($src);
+    $view->addScript(static_url($src));
 }
 
 function use_module_script($moduleId, $src) {
