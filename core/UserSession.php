@@ -39,6 +39,7 @@ class UserSession {
         $this->set(self::SESSION_ID, $value);
     }
 
+    /*
     public function guid() {
         // based on: https://www.uuidgenerator.net/dev-corner/php
         // Generate 16 bytes (128 bits) of random data
@@ -52,13 +53,13 @@ class UserSession {
         // Output the 36 character UUID.
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
-
+    */
 
     public function getHash() {
-        if (!$this->config->get(self::CONFIG_SALT)) {
-            throw new RuntimeException("'".self::CONFIG_SALT."' has no value in configuration.");
-        }
         $salt = $this->config->get(self::CONFIG_SALT);
+        if (!$salt) {
+            throw new RuntimeException("'".self::CONFIG_SALT."' has no value in configuration.");
+        }        
         $result = md5($salt.$this->request->getIp());
         return $result;
     }
