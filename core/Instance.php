@@ -15,9 +15,15 @@ class Instance {
         if ($this->isCreated()) {
             return $this->instance;
         }
-        $reflect = new ReflectionClass($this->class);
         $allArgs = array_merge($this->args, $args);
-        $this->instance = $reflect->newInstanceArgs($allArgs);
+        try {
+            $reflect = new ReflectionClass($this->class);
+            $this->instance = $reflect->newInstanceArgs($allArgs);
+        }
+        catch (ReflectionException $e)
+        {
+            throw new RuntimeException("Couldn't create instance: ".$this->class.", arguments: ".json_encode($allArgs));
+        }
         return $this->instance;
     }
 
